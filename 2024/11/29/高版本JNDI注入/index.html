@@ -15,6 +15,11 @@
   
   <title>
     
+      高版本JAVA下的JNDI注入 
+      
+      
+      |
+    
      YSec
   </title>
 
@@ -154,17 +159,56 @@
   <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
   <div class="container post-details" id="post-details">
     <div class="post-content">
-      <div class="post-title"></div>
+      <div class="post-title">高版本JAVA下的JNDI注入</div>
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-11-29 14:04:23
+          2024-11-29 14:06:55
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                    <b>#</b> 漏洞原理
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/java/" title="java">
+                    #java
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/JNDI/" title="JNDI">
+                    #JNDI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                    #漏洞挖掘
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                    #漏洞原理
+                  </a>
+                </span>
+                
+              </span>
+          
       </div>
       <div class="markdown-body">
-        <p>title: 高版本JAVA下的JNDI注入<br>categories:<br>    - 漏洞原理<br>tags:<br>        - java<br>        - JNDI<br>        - 漏洞挖掘<br>        - 漏洞原理</p>
-<h2 id="trustURLCodebase分析"><a href="#trustURLCodebase分析" class="headerlink" title="trustURLCodebase分析"></a>trustURLCodebase分析</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// com/sun/jndi/rmi/registry/RegistryContext.java</span></span><br><span class="line"><span class="keyword">private</span> Object <span class="title function_">decodeObject</span><span class="params">(Remote r, Name name)</span> <span class="keyword">throws</span> NamingException &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> (r <span class="keyword">instanceof</span> RemoteReference)</span><br><span class="line">                    ? ((RemoteReference)r).getReference()</span><br><span class="line">                    : (Object)r;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        	* 上面代码检测r是否为RemoteReference实例，RemoteReference是RMI的一个类，封装了远程对象的引用</span></span><br><span class="line"><span class="comment">        	* 如果是就将r进行强制类型转化，并且使用getReference方法来获取一个引用对象</span></span><br><span class="line"><span class="comment">        	* 如果不是就将r转化为Object对象</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Use reference if possible</span></span><br><span class="line">        <span class="type">Reference</span> <span class="variable">ref</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Reference) &#123;</span><br><span class="line">            ref = (Reference) obj;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Referenceable) &#123;</span><br><span class="line">            ref = ((Referenceable)(obj)).getReference();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        	* 如果 obj 是 Reference 类型，那么将它强制转换为 Reference 并赋值给 ref。</span></span><br><span class="line"><span class="comment">			* 如果 obj 是 Referenceable 类型（通常是 RMI 中的对象），那么调用 getReference() 方法来获取 Reference 对象。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ref != <span class="literal">null</span> &amp;&amp; ref.getFactoryClassLocation() != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">            !trustURLCodebase) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConfigurationException</span>(</span><br><span class="line">                <span class="string">&quot;The object factory is untrusted. Set the system property&quot;</span> +</span><br><span class="line">                <span class="string">&quot; &#x27;com.sun.jndi.rmi.object.trustURLCodebase&#x27; to &#x27;true&#x27;.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> NamingManager.getObjectInstance(obj, name, <span class="built_in">this</span>,</span><br><span class="line">                                                environment);</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        	* 如果 ref 不为 null 且 ref.getFactoryClassLocation() 不为 null（即存在工厂类的位置），那么程序继续检查是否信任来自 URL 代码库的类。</span></span><br><span class="line"><span class="comment">			* trustURLCodebase 是一个布尔类型的变量，控制是否信任通过 URL 代码库加载的类。</span></span><br><span class="line"><span class="comment">			* 如果该值为 false，并且工厂类的位置不为 null，则抛出一个 ConfigurationException 异常</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"><span class="comment">//  &#125; catch (NamingException e) &#123; ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h2 id="trustURLCodebase分析"><a href="#trustURLCodebase分析" class="headerlink" title="trustURLCodebase分析"></a>trustURLCodebase分析</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// com/sun/jndi/rmi/registry/RegistryContext.java</span></span><br><span class="line"><span class="keyword">private</span> Object <span class="title function_">decodeObject</span><span class="params">(Remote r, Name name)</span> <span class="keyword">throws</span> NamingException &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">obj</span> <span class="operator">=</span> (r <span class="keyword">instanceof</span> RemoteReference)</span><br><span class="line">                    ? ((RemoteReference)r).getReference()</span><br><span class="line">                    : (Object)r;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        	* 上面代码检测r是否为RemoteReference实例，RemoteReference是RMI的一个类，封装了远程对象的引用</span></span><br><span class="line"><span class="comment">        	* 如果是就将r进行强制类型转化，并且使用getReference方法来获取一个引用对象</span></span><br><span class="line"><span class="comment">        	* 如果不是就将r转化为Object对象</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Use reference if possible</span></span><br><span class="line">        <span class="type">Reference</span> <span class="variable">ref</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Reference) &#123;</span><br><span class="line">            ref = (Reference) obj;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Referenceable) &#123;</span><br><span class="line">            ref = ((Referenceable)(obj)).getReference();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        	* 如果 obj 是 Reference 类型，那么将它强制转换为 Reference 并赋值给 ref。</span></span><br><span class="line"><span class="comment">			* 如果 obj 是 Referenceable 类型（通常是 RMI 中的对象），那么调用 getReference() 方法来获取 Reference 对象。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (ref != <span class="literal">null</span> &amp;&amp; ref.getFactoryClassLocation() != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">            !trustURLCodebase) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConfigurationException</span>(</span><br><span class="line">                <span class="string">&quot;The object factory is untrusted. Set the system property&quot;</span> +</span><br><span class="line">                <span class="string">&quot; &#x27;com.sun.jndi.rmi.object.trustURLCodebase&#x27; to &#x27;true&#x27;.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> NamingManager.getObjectInstance(obj, name, <span class="built_in">this</span>,</span><br><span class="line">                                                environment);</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        	* 如果 ref 不为 null 且 ref.getFactoryClassLocation() 不为 null（即存在工厂类的位置），那么程序继续检查是否信任来自 URL 代码库的类。</span></span><br><span class="line"><span class="comment">			* trustURLCodebase 是一个布尔类型的变量，控制是否信任通过 URL 代码库加载的类。</span></span><br><span class="line"><span class="comment">			* 如果该值为 false，并且工厂类的位置不为 null，则抛出一个 ConfigurationException 异常</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line"><span class="comment">//  &#125; catch (NamingException e) &#123; ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>直接看最后带return的if代码块</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (ref != <span class="literal">null</span> &amp;&amp; ref.getFactoryClassLocation() != <span class="literal">null</span> &amp;&amp;</span><br><span class="line">            !trustURLCodebase) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConfigurationException</span>(</span><br><span class="line">                <span class="string">&quot;The object factory is untrusted. Set the system property&quot;</span> +</span><br><span class="line">                <span class="string">&quot; &#x27;com.sun.jndi.rmi.object.trustURLCodebase&#x27; to &#x27;true&#x27;.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> NamingManager.getObjectInstance(obj, name, <span class="built_in">this</span>,</span><br><span class="line">                                                environment);</span><br></pre></td></tr></table></figure>
@@ -212,9 +256,49 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-11-29 14:04:23
+              2024-11-29 14:06:55
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                        <b>#</b> 漏洞原理
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/java/" title="java">
+                        #java
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/JNDI/" title="JNDI">
+                        #JNDI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                        #漏洞挖掘
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                        #漏洞原理
+                      </a>
+                    </span>
+                    
+                  </span>
+              
           </div>
           <div class="post-foot-prev">
             
@@ -541,7 +625,7 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' +  + '&url=' + http%3A%2F%2Flxy00.top%2F2024%2F11%2F29%2F%25E9%25AB%2598%25E7%2589%2588%25E6%259C%25ACJNDI%25E6%25B3%25A8%25E5%2585%25A5%2F + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E9%AB%98%E7%89%88%E6%9C%ACJAVA%E4%B8%8B%E7%9A%84JNDI%E6%B3%A8%E5%85%A5 + '&url=' + http%3A%2F%2Flxy00.top%2F2024%2F11%2F29%2F%25E9%25AB%2598%25E7%2589%2588%25E6%259C%25ACJNDI%25E6%25B3%25A8%25E5%2585%25A5%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         

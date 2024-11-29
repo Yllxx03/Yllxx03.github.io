@@ -15,6 +15,11 @@
   
   <title>
     
+      JNDI注入原理 
+      
+      
+      |
+    
      YSec
   </title>
 
@@ -154,17 +159,56 @@
   <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
   <div class="container post-details" id="post-details">
     <div class="post-content">
-      <div class="post-title"></div>
+      <div class="post-title">JNDI注入原理</div>
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-11-29 14:03:45
+          2024-11-29 14:06:36
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                    <b>#</b> 漏洞原理
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/java/" title="java">
+                    #java
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/JNDI/" title="JNDI">
+                    #JNDI
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                    #漏洞挖掘
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                    #漏洞原理
+                  </a>
+                </span>
+                
+              </span>
+          
       </div>
       <div class="markdown-body">
-        <p>title: JNDI注入原理<br>categories:<br>    - 漏洞原理<br>tags:<br>        - java<br>        - JNDI<br>        - 漏洞挖掘<br>        - 漏洞原理</p>
-<h2 id="JNDI简介"><a href="#JNDI简介" class="headerlink" title="JNDI简介"></a>JNDI简介</h2><p>JNDI(Java Naming and Directory Interface)是一个应用程序设计的 API，一种标准的 Java 命名系统接口。JNDI 提供统一的客户端 API，通过不同的访问提供者接口JNDI服务供应接口(SPI)的实现，由管理者将 JNDI API 映射为特定的命名服务和目录系统，使得 Java 应用程序可以和这些命名服务和目录服务之间进行交互。</p>
+        <h2 id="JNDI简介"><a href="#JNDI简介" class="headerlink" title="JNDI简介"></a>JNDI简介</h2><p>JNDI(Java Naming and Directory Interface)是一个应用程序设计的 API，一种标准的 Java 命名系统接口。JNDI 提供统一的客户端 API，通过不同的访问提供者接口JNDI服务供应接口(SPI)的实现，由管理者将 JNDI API 映射为特定的命名服务和目录系统，使得 Java 应用程序可以和这些命名服务和目录服务之间进行交互。</p>
 <p>通俗来说，程序可用使用JNDI来实现访问系统的<strong>命令服务</strong>和<strong>目录服务</strong></p>
 <h2 id="JDNI简单使用示例"><a href="#JDNI简单使用示例" class="headerlink" title="JDNI简单使用示例"></a>JDNI简单使用示例</h2><ol>
 <li><p><strong>资源查找</strong><br> 通过 JNDI 查找特定的资源（如数据库、JMS 队列、远程对象等）。</p>
@@ -257,9 +301,49 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-11-29 14:03:45
+              2024-11-29 14:06:36
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                        <b>#</b> 漏洞原理
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/java/" title="java">
+                        #java
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/JNDI/" title="JNDI">
+                        #JNDI
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/" title="漏洞挖掘">
+                        #漏洞挖掘
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%BC%8F%E6%B4%9E%E5%8E%9F%E7%90%86/" title="漏洞原理">
+                        #漏洞原理
+                      </a>
+                    </span>
+                    
+                  </span>
+              
           </div>
           <div class="post-foot-prev">
             
@@ -591,7 +675,7 @@
       </a>
       <div class="share-content hidden">
         
-          <a class="share-item" href="https://twitter.com/intent/tweet?text=' +  + '&url=' + http%3A%2F%2Flxy00.top%2F2024%2F11%2F29%2FJNDI%25E6%25B3%25A8%25E5%2585%25A5%2F + '" target="_blank" title="Twitter">
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + JNDI%E6%B3%A8%E5%85%A5%E5%8E%9F%E7%90%86 + '&url=' + http%3A%2F%2Flxy00.top%2F2024%2F11%2F29%2FJNDI%25E6%25B3%25A8%25E5%2585%25A5%2F + '" target="_blank" title="Twitter">
             <i class="iconfont icon-twitter"></i>
           </a>
         
