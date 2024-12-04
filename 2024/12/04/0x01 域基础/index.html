@@ -15,7 +15,7 @@
   
   <title>
     
-      archive_a: 2024/4 
+      内网渗透-0x02 域基础 
       
       
       |
@@ -114,221 +114,225 @@
 
 
       <div class="flex-container">
-        <!-- 归档页，展示本站所有文章，按照年份降序归类，url形式：https://yoursite/archives/ -->
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
 
-<!-- last: 按年份把文章分组，当前遍历到的年份 -->
-<!-- now: 当前遍历到的文章的发布年份 -->
 
-<div class="container archives">
-  <div class="post-list">
-    
-        <!-- 后续文章的发布年份呈现 -->
-        <div class="content-title">
-          <h2>
-            <span>2024</span>
-          </h2>
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">内网渗透-0x02 域基础</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-12-04 22:25:07
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    <b>#</b> 内网渗透
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    #内网渗透
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E5%9F%9F/" title="域">
+                    #域
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h2 id="什么是域"><a href="#什么是域" class="headerlink" title="什么是域"></a>什么是域</h2><p>假设有一家公司名为Y科技，公司内有人事部、技术部、财务部这三个部门，其中要求财务部的设备不出网、技术部的设备能启用开发工具、人事部的设备能使用特定的打印机，如果逐个设备去设置权限将十分困难，那我们可以使用集中管理的方式，使用某台主机来控制所有用户，赋予不同用户不同的权限，这就是域，域的名字为域名，我们就取其为<code>Y.com</code>，其中不同的部门属于域中的不同组织<code>OU</code>，对每个组的不同权限为<code>组策略</code>，控制所有用户的主机称为域控主机<code>DC</code></p>
+<h2 id="域的特点"><a href="#域的特点" class="headerlink" title="域的特点"></a>域的特点</h2><ol>
+<li>集中管理，集中由DC管理</li>
+<li>域控的IP为静态</li>
+<li>成员的DNS为域控的IP</li>
+</ol>
+<h2 id="域的组成"><a href="#域的组成" class="headerlink" title="域的组成"></a>域的组成</h2><ol>
+<li>域控制器DC</li>
+<li>域成员</li>
+</ol>
+<h2 id="域和组的区别"><a href="#域和组的区别" class="headerlink" title="域和组的区别"></a>域和组的区别</h2><ul>
+<li>工作组人人平等，用户的数据保存在本地电脑</li>
+<li>域环境人人不平等，登录数据保存在域，用户可以使用自己的账户密码在狱中的任何主机进行登录</li>
+</ul>
+<h2 id="部署域"><a href="#部署域" class="headerlink" title="部署域"></a>部署域</h2><ol>
+<li>安装域控制器-&gt;生成域环境</li>
+<li>安装活动目录-&gt;生成域控制器</li>
+<li>活动目录Active Directory (AD)</li>
+</ol>
+<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><h3 id="查看域信息"><a href="#查看域信息" class="headerlink" title="查看域信息"></a>查看域信息</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 查询计算机所在域或工作组</span><br><span class="line">net config workstation</span><br><span class="line"></span><br><span class="line">// 显示当前登录用户的域</span><br><span class="line">set userdomain</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="用户管理"><a href="#用户管理" class="headerlink" title="用户管理"></a>用户管理</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 创建本地用户</span><br><span class="line">net user name passwd /add</span><br><span class="line"></span><br><span class="line">// 创建域用户</span><br><span class="line">net user name passwd /add /domain</span><br><span class="line"></span><br><span class="line">// 列出域中的所有用户</span><br><span class="line">Get-ADUser -Filter * -Property DisplayName</span><br></pre></td></tr></table></figure>
+
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2024/12/04/0x00%20%E7%BB%84%E5%9F%BA%E7%A1%80/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-12-04 22:25:07
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        <b>#</b> 内网渗透
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        #内网渗透
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E5%9F%9F/" title="域">
+                        #域
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2024/12/04/0x03%20%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
         </div>
       
-      <div class="post-item" title="内网渗透-0x06 横向移动">
-        <div class="time-m-d">12-04</div>
-        <div class="title">
-          <a href="/2024/12/04/0x06%20%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/">
-            <span>内网渗透-0x06 横向移动</span>
-          </a>
-        </div>
-      </div>
+    </div>
     
-      <div class="post-item" title="内网渗透-0x05 端口扫描">
-        <div class="time-m-d">12-04</div>
-        <div class="title">
-          <a href="/2024/12/04/0x05%20%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F/">
-            <span>内网渗透-0x05 端口扫描</span>
-          </a>
-        </div>
-      </div>
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%9F%9F"><span class="toc-text">什么是域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-text">域的特点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-text">域的组成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%9F%E5%92%8C%E7%BB%84%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">域和组的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E5%9F%9F"><span class="toc-text">部署域</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="toc-text">基本命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E5%9F%9F%E4%BF%A1%E6%81%AF"><span class="toc-text">查看域信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86"><span class="toc-text">用户管理</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
     
-      <div class="post-item" title="内网渗透-0x04 主机发现">
-        <div class="time-m-d">12-04</div>
-        <div class="title">
-          <a href="/2024/12/04/0x04%20%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0/">
-            <span>内网渗透-0x04 主机发现</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="内网渗透-0x03 信息收集">
-        <div class="time-m-d">12-04</div>
-        <div class="title">
-          <a href="/2024/12/04/0x03%20%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">
-            <span>内网渗透-0x03 信息收集</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="内网渗透-0x02 域基础">
-        <div class="time-m-d">12-04</div>
-        <div class="title">
-          <a href="/2024/12/04/0x01%20%E5%9F%9F%E5%9F%BA%E7%A1%80/">
-            <span>内网渗透-0x02 域基础</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="内网渗透-0x01 组基础">
-        <div class="time-m-d">12-04</div>
-        <div class="title">
-          <a href="/2024/12/04/0x00%20%E7%BB%84%E5%9F%BA%E7%A1%80/">
-            <span>内网渗透-0x01 组基础</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="XXE漏洞浅析">
-        <div class="time-m-d">12-01</div>
-        <div class="title">
-          <a href="/2024/12/01/XXE/">
-            <span>XXE漏洞浅析</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="内网渗透-端口复用">
-        <div class="time-m-d">11-29</div>
-        <div class="title">
-          <a href="/2024/11/29/%E7%AB%AF%E5%8F%A3%E5%A4%8D%E7%94%A8/">
-            <span>内网渗透-端口复用</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="内网渗透-出网探测">
-        <div class="time-m-d">11-29</div>
-        <div class="title">
-          <a href="/2024/11/29/%E5%87%BA%E7%BD%91%E6%8E%A2%E6%B5%8B/">
-            <span>内网渗透-出网探测</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="高版本JAVA下的JNDI注入">
-        <div class="time-m-d">11-29</div>
-        <div class="title">
-          <a href="/2024/11/29/%E9%AB%98%E7%89%88%E6%9C%ACJNDI%E6%B3%A8%E5%85%A5/">
-            <span>高版本JAVA下的JNDI注入</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="JNDI注入原理">
-        <div class="time-m-d">11-29</div>
-        <div class="title">
-          <a href="/2024/11/29/JNDI%E6%B3%A8%E5%85%A5/">
-            <span>JNDI注入原理</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="VulnStack-ATT&CK-7">
-        <div class="time-m-d">09-25</div>
-        <div class="title">
-          <a href="/2024/09/25/VulnStack-ATT&CK-7/">
-            <span>VulnStack-ATT&CK-7</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="VulnStack-ATT&CK-5">
-        <div class="time-m-d">09-21</div>
-        <div class="title">
-          <a href="/2024/09/21/VulnStack-ATT&CK-5/">
-            <span>VulnStack-ATT&CK-5</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="VulnStack-ATT&CK-4">
-        <div class="time-m-d">09-21</div>
-        <div class="title">
-          <a href="/2024/09/21/VulnStack-ATT&CK-4/">
-            <span>VulnStack-ATT&CK-4</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="VulnStack-ATT&CK-3">
-        <div class="time-m-d">09-21</div>
-        <div class="title">
-          <a href="/2024/09/21/VulnStack-ATT&CK-3/">
-            <span>VulnStack-ATT&CK-3</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_反序列化漏洞">
-        <div class="time-m-d">04-16</div>
-        <div class="title">
-          <a href="/2024/04/16/iwebsec_%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">
-            <span>iwebsec_反序列化漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_xss漏洞">
-        <div class="time-m-d">04-15</div>
-        <div class="title">
-          <a href="/2024/04/15/iwebsec_xss%E6%BC%8F%E6%B4%9E/">
-            <span>iwebsec_xss漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_代码执行漏洞">
-        <div class="time-m-d">04-15</div>
-        <div class="title">
-          <a href="/2024/04/15/iwebsec_%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">
-            <span>iwebsec_代码执行漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_命令执行漏洞">
-        <div class="time-m-d">04-15</div>
-        <div class="title">
-          <a href="/2024/04/15/iwebsec_%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">
-            <span>iwebsec_命令执行漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_文件包含漏洞">
-        <div class="time-m-d">04-15</div>
-        <div class="title">
-          <a href="/2024/04/15/iwebsec_%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/">
-            <span>iwebsec_文件包含漏洞</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_upload">
-        <div class="time-m-d">04-15</div>
-        <div class="title">
-          <a href="/2024/04/15/iwebsec_upload/">
-            <span>iwebsec_upload</span>
-          </a>
-        </div>
-      </div>
-    
-      <div class="post-item" title="iwebsec_SQL">
-        <div class="time-m-d">04-14</div>
-        <div class="title">
-          <a href="/2024/04/14/iwebsec_sql/">
-            <span>iwebsec_SQL</span>
-          </a>
-        </div>
+      <div class="comments-container">
+        
+
+
+
+
+
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    function loadGitalkSuc() {
+      const gitalk = new Gitalk({
+        clientID: 'Ov23licpPbk56RG2QlZ9',
+        clientSecret: '8c17dc4d2de10cbb8846fbd6a9276cc3dc42f9e9',
+        repo: 'Yllxx03.github.io',
+        owner: 'Yllxx03',
+        admin: ['Yllxx03'],
+        id: location.pathname,
+        distractionFreeMode: false
+      })
+
+      gitalk.render('gitalk-container')
+    }
+  </script>
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
+  
+
+
+
       </div>
     
   </div>
-</div>
+
 
         
 <div class="footer">
@@ -585,6 +589,24 @@
 
 
         
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-0x02%20%E5%9F%9F%E5%9F%BA%E7%A1%80 + '&url=' + http%3A%2F%2Fysec.site%2F2024%2F12%2F04%2F0x01%2520%25E5%259F%259F%25E5%259F%25BA%25E7%25A1%2580%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://ysec.site/2024/12/04/0x01%20%E5%9F%9F%E5%9F%BA%E7%A1%80/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
   
   
 <script src="/js/shares.js"></script>

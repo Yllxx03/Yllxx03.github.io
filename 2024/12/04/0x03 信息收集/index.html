@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-Hans" color-mode="light">
+
+  <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="author" content="YSec" />
+  <!-- Open Graph Description 简短摘要-->
+  
+  <!-- 用于搜索引擎的文章摘要 -->
+  
+  <meta name="description" content="与YSec共同进步" />
+  
+  
+  
+  <title>
+    
+      内网渗透-0x03 信息收集 
+      
+      
+      |
+    
+     YSec
+  </title>
+
+  
+    <link rel="apple-touch-icon" href="/images/favicon.png">
+    <link rel="icon" href="/images/favicon.png">
+  
+
+  <!-- Raleway-Font -->
+  <link href="https://fonts.googleapis.com/css?family=Raleway&display=swap" rel="stylesheet">
+
+  <!-- hexo site css -->
+  <link rel="stylesheet" href="/css/main.css" />
+  <link rel="stylesheet" href="//at.alicdn.com/t/font_1886449_67xjft27j1l.css" />
+  <!-- 代码块风格 -->
+  
+    
+<link rel="stylesheet" href="/css/figcaption/mac-block.css">
+
+  
+
+  <!-- jquery3.3.1 -->
+  
+    <script defer type="text/javascript" src="/plugins/jquery.min.js"></script>
+  
+
+  <!-- fancybox -->
+  
+    <link href="/plugins/jquery.fancybox.min.css" rel="stylesheet">
+    <script defer type="text/javascript" src="/plugins/jquery.fancybox.min.js"></script>
+  
+  
+<script src="/js/fancybox.js"></script>
+
+
+  
+
+  
+
+  <script>
+    var html = document.documentElement
+    const colorMode = localStorage.getItem('color-mode')
+    if (colorMode) {
+      document.documentElement.setAttribute('color-mode', colorMode)
+    }
+  </script>
+<meta name="generator" content="Hexo 7.1.1"></head>
+
+
+  <body>
+    <div id="app">
+      <div class="header">
+  <div class="avatar">
+    <a href="/">
+      <!-- 头像取消懒加载，添加no-lazy -->
+      
+        <img src="/images/avatar.png" alt="">
+      
+    </a>
+    <div class="nickname"><a href="/">YSec</a></div>
+  </div>
+  <div class="navbar">
+    <ul>
+      
+        <li class="nav-item" data-path="/">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="nav-item" data-path="/archives/">
+          <a href="/archives/">Archives</a>
+        </li>
+      
+        <li class="nav-item" data-path="/categories/">
+          <a href="/categories/">Categories</a>
+        </li>
+      
+        <li class="nav-item" data-path="/tags/">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="nav-item" data-path="/about/">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </div>
+</div>
+
+
+<script src="/js/activeNav.js"></script>
+
+
+
+      <div class="flex-container">
+        <!-- 文章详情页，展示文章具体内容，url形式：https://yoursite/文章标题/ -->
+<!-- 同时为「标签tag」，「朋友friend」，「分类categories」，「关于about」页面的承载页面，具体展示取决于page.type -->
+
+
+  <!-- LaTex Display -->
+
+  
+    <script async type="text/javascript" src="/plugins/mathjax/tex-chtml.js"></script>
+  
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    }
+  </script>
+
+
+
+
+
+  <!-- clipboard -->
+
+  
+    <script async type="text/javascript" src="/plugins/clipboard.min.js"></script>
+  
+  
+<script src="/js/codeCopy.js"></script>
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  <!-- 文章内容页 url形式：https://yoursite/文章标题/ -->
+  <div class="container post-details" id="post-details">
+    <div class="post-content">
+      <div class="post-title">内网渗透-0x03 信息收集</div>
+      <div class="post-attach">
+        <span class="post-pubtime">
+          <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+          2024-12-04 22:25:00
+        </span>
+        
+              <span class="post-categories">
+                <i class="iconfont icon-bookmark" title="Categories"></i>
+                
+                <span class="span--category">
+                  <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    <b>#</b> 内网渗透
+                  </a>
+                </span>
+                
+              </span>
+          
+              <span class="post-tags">
+                <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                    #内网渗透
+                  </a>
+                </span>
+                
+                <span class="span--tag mr-8">
+                  <a href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" title="信息收集">
+                    #信息收集
+                  </a>
+                </span>
+                
+              </span>
+          
+      </div>
+      <div class="markdown-body">
+        <p>拿下某主机权限后，我们需要对其所在的网络进行探测</p>
+<h2 id="查当前主机信息"><a href="#查当前主机信息" class="headerlink" title="查当前主机信息"></a>查当前主机信息</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">// 主机名</span><br><span class="line">hostname</span><br><span class="line"></span><br><span class="line">// 查配置</span><br><span class="line">systeminfo</span><br><span class="line"></span><br><span class="line">//查版本</span><br><span class="line">ver</span><br><span class="line"></span><br><span class="line">// 查补丁</span><br><span class="line">wmic qfe get description,installedOn /format:csv</span><br><span class="line"></span><br><span class="line">// 查进程</span><br><span class="line">tasklist /svc</span><br><span class="line">wmic process get caption,executablepath,commandline /format:csv		//会列程序出详细路径</span><br><span class="line">get-process</span><br><span class="line"></span><br><span class="line">// 查系统架构</span><br><span class="line">wmic os get osarchitecture</span><br><span class="line"></span><br><span class="line">// 查系统架构名</span><br><span class="line">wmic os get caption</span><br><span class="line"></span><br><span class="line">// 查逻辑盘符</span><br><span class="line">wmic logicaldisk get caption</span><br><span class="line"></span><br><span class="line">// 查安装的软件</span><br><span class="line">wmic product get name,version</span><br><span class="line"></span><br><span class="line">// 查服务</span><br><span class="line">wmic service list brief</span><br><span class="line">sc query</span><br><span class="line">Get-WmiObject win32_service | select PathName</span><br></pre></td></tr></table></figure>
+
+<h2 id="查询网络配置"><a href="#查询网络配置" class="headerlink" title="查询网络配置"></a>查询网络配置</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 列出所有网卡信息和IP地址</span><br><span class="line">ipconfig /all</span><br><span class="line"></span><br><span class="line">// ARP表</span><br><span class="line">arp -a</span><br><span class="line"></span><br><span class="line">// 路由表</span><br><span class="line">route print</span><br><span class="line"></span><br><span class="line">// 监听的端口</span><br><span class="line">netstat -ano</span><br><span class="line"></span><br><span class="line">// 连接的端口信息</span><br><span class="line">Get-NetTCPConnetction</span><br><span class="line"></span><br><span class="line">// DNS缓存</span><br><span class="line">ipconfig /displaydns</span><br></pre></td></tr></table></figure>
+
+<h2 id="查询域信息"><a href="#查询域信息" class="headerlink" title="查询域信息"></a>查询域信息</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">// 获取当前组的计算机名 </span><br><span class="line">net view</span><br><span class="line"></span><br><span class="line">// 网络发现 </span><br><span class="line">net view /all</span><br><span class="line"></span><br><span class="line">// 查看所有域 </span><br><span class="line">net view /domain</span><br><span class="line"></span><br><span class="line">// 域信任信息 </span><br><span class="line">nltest /domain_trusts</span><br><span class="line"></span><br><span class="line">// 定位域控 </span><br><span class="line">net time /domain</span><br><span class="line"></span><br><span class="line">// 查看域中的用户名 </span><br><span class="line">dsquery user</span><br><span class="line"></span><br><span class="line">// 查询域组名称 </span><br><span class="line">net group /domain</span><br><span class="line"></span><br><span class="line">//查询域管理员 </span><br><span class="line">net group &quot;Domain Admins&quot; /domain</span><br><span class="line"></span><br><span class="line">// 域控信息</span><br><span class="line">nltest /dclist:xx</span><br><span class="line">Get-NetDomain</span><br><span class="line">Get-NetDomainController</span><br><span class="line">net group &quot;Domain controllers&quot;</span><br></pre></td></tr></table></figure>
+
+<h2 id="用户信息查询"><a href="#用户信息查询" class="headerlink" title="用户信息查询"></a>用户信息查询</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">//查看用户</span><br><span class="line">net user</span><br><span class="line">whoami / whoami /priv / whoami /all</span><br><span class="line">wmic useraccount get /ALL /format:csv</span><br><span class="line"></span><br><span class="line">//用户特权信息 </span><br><span class="line">whoami /priv</span><br><span class="line"></span><br><span class="line">//查看当前权限 </span><br><span class="line">net localgroup administrators</span><br><span class="line"></span><br><span class="line">//查看在线用户 </span><br><span class="line">quser / qwinsta / query user</span><br><span class="line"></span><br><span class="line">//查看当前计算机名，全名，用户名，系统版本，工作 站域，登陆域 </span><br><span class="line">net config Workstation</span><br><span class="line"></span><br><span class="line">//ACL 信息 </span><br><span class="line">get-acl</span><br><span class="line"></span><br><span class="line">//出网探测</span><br><span class="line">powershell -c &quot;1..65535 | % &#123;echo ((new-object Net.Sockets.TcpClient).Connect(&#x27;allports.exposed&#x27;,$_)) $_ &#125; 2&gt;$null</span><br></pre></td></tr></table></figure>
+
+<h2 id="防火墙信息"><a href="#防火墙信息" class="headerlink" title="防火墙信息"></a>防火墙信息</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//查看防火墙状态 </span><br><span class="line">netsh advfirewall show allprofiles</span><br><span class="line"></span><br><span class="line">//防火墙日志目录 </span><br><span class="line">netsh firewall show logging</span><br><span class="line"></span><br><span class="line">//防火墙规则 </span><br><span class="line">netsh advfirewall firewall show rule name=all</span><br><span class="line">netsh firewall show config</span><br><span class="line">netsh firewall show state</span><br></pre></td></tr></table></figure>
+
+<h2 id="敏感信息"><a href="#敏感信息" class="headerlink" title="敏感信息"></a>敏感信息</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">1.指定目录下搜集各类敏感文件</span><br><span class="line">dir /a /s /b d:\&quot;*.txt&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*.xml&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*.mdb&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*.sql&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*.mdf&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*.eml&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*.pst&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*conf*&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*bak*&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*pwd*&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*pass*&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*login*&quot;</span><br><span class="line">dir /a /s /b d:\&quot;*user*&quot;</span><br><span class="line">2.指定目录下的文件中搜集各种账号密码</span><br><span class="line">findstr /si pass *.inc *.config *.ini *.txt *.asp *.aspx *.php *.jsp *.xml *.cgi *.bak</span><br><span class="line">findstr /si userpwd *.inc *.config *.ini *.txt *.asp *.aspx *.php *.jsp *.xml *.cgi *.bak</span><br><span class="line">findstr /si pwd *.inc *.config *.ini *.txt *.asp *.aspx *.php *.jsp *.xml *.cgi *.bak</span><br><span class="line">findstr /si login *.inc *.config *.ini *.txt *.asp *.aspx *.php *.jsp *.xml *.cgi *.bak</span><br><span class="line">findstr /si user *.inc *.config *.ini *.txt *.asp *.aspx *.php *.jsp *.xml *.cgi *.bak</span><br><span class="line">3.查看,删除 指定文件</span><br><span class="line">type c:\windows\temp\admin_pass.bak 查看某个文件内容</span><br><span class="line">del d:\ad\*.* /a /s /q /f             强制删除指定路径下的所有文件</span><br><span class="line">tree /F /A D:\ &gt;&gt; file_list.txt     导出指定路径下的文件目录结构</span><br><span class="line">rd /q/s c:\windows\temp\test         删除文件夹</span><br></pre></td></tr></table></figure>
+
+
+      </div>
+      
+        <div class="prev-or-next">
+          <div class="post-foot-next">
+            
+              <a href="/2024/12/04/0x01%20%E5%9F%9F%E5%9F%BA%E7%A1%80/" target="_self">
+                <i class="iconfont icon-chevronleft"></i>
+                <span>Prev</span>
+              </a>
+            
+          </div>
+          <div class="post-attach">
+            <span class="post-pubtime">
+              <i class="iconfont icon-updatetime mr-10" title="Update time"></i>
+              2024-12-04 22:25:00
+            </span>
+            
+                  <span class="post-categories">
+                    <i class="iconfont icon-bookmark" title="Categories"></i>
+                    
+                    <span class="span--category">
+                      <a href="/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        <b>#</b> 内网渗透
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+                  <span class="post-tags">
+                    <i class="iconfont icon-tags mr-10" title="Tags"></i>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" title="内网渗透">
+                        #内网渗透
+                      </a>
+                    </span>
+                    
+                    <span class="span--tag mr-8">
+                      <a href="/tags/%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" title="信息收集">
+                        #信息收集
+                      </a>
+                    </span>
+                    
+                  </span>
+              
+          </div>
+          <div class="post-foot-prev">
+            
+              <a href="/2024/12/04/0x04%20%E4%B8%BB%E6%9C%BA%E5%8F%91%E7%8E%B0/" target="_self">
+                <span>Next</span>
+                <i class="iconfont icon-chevronright"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+    </div>
+    
+  <div id="btn-catalog" class="btn-catalog">
+    <i class="iconfont icon-catalog"></i>
+  </div>
+  <div class="post-catalog hidden" id="catalog">
+    <div class="title">Contents</div>
+    <div class="catalog-content">
+      
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E5%BD%93%E5%89%8D%E4%B8%BB%E6%9C%BA%E4%BF%A1%E6%81%AF"><span class="toc-text">查当前主机信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE"><span class="toc-text">查询网络配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E5%9F%9F%E4%BF%A1%E6%81%AF"><span class="toc-text">查询域信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%94%A8%E6%88%B7%E4%BF%A1%E6%81%AF%E6%9F%A5%E8%AF%A2"><span class="toc-text">用户信息查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%B2%E7%81%AB%E5%A2%99%E4%BF%A1%E6%81%AF"><span class="toc-text">防火墙信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%8F%E6%84%9F%E4%BF%A1%E6%81%AF"><span class="toc-text">敏感信息</span></a></li></ol>
+      
+    </div>
+  </div>
+
+  
+<script src="/js/catalog.js"></script>
+
+
+
+
+    
+      <div class="comments-container">
+        
+
+
+
+
+
+
+  <div id="gitalk-container"></div>
+
+  <script>
+    function loadGitalkSuc() {
+      const gitalk = new Gitalk({
+        clientID: 'Ov23licpPbk56RG2QlZ9',
+        clientSecret: '8c17dc4d2de10cbb8846fbd6a9276cc3dc42f9e9',
+        repo: 'Yllxx03.github.io',
+        owner: 'Yllxx03',
+        admin: ['Yllxx03'],
+        id: location.pathname,
+        distractionFreeMode: false
+      })
+
+      gitalk.render('gitalk-container')
+    }
+  </script>
+  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js" onload="loadGitalkSuc(this)"></script>
+  
+
+
+
+      </div>
+    
+  </div>
+
+
+        
+<div class="footer">
+  <div class="social">
+    <ul>
+      
+        <li>
+          
+              <a title="github" target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">
+                <i class="iconfont icon-github"></i>
+              </a>
+              
+        </li>
+        
+    </ul>
+  </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Copyright © 2024 Oranges</a>
+        
+    </div>
+  
+    
+    <div class="footer-more">
+      
+        <a target="_blank" rel="noopener" href="https://github.com/zchengsite/hexo-theme-oranges">Theme by Oranges | Powered by Hexo</a>
+        
+    </div>
+  
+  
+</div>
+
+      </div>
+
+      <div class="tools-bar">
+        <div class="back-to-top tools-bar-item hidden">
+  <a href="javascript: void(0)">
+    <i class="iconfont icon-chevronup"></i>
+  </a>
+</div>
+
+
+<script src="/js/backtotop.js"></script>
+
+
+
+        
+  <div class="search-icon tools-bar-item" id="search-icon">
+    <a href="javascript: void(0)">
+      <i class="iconfont icon-search"></i>
+    </a>
+  </div>
+
+  <div class="search-overlay hidden">
+    <div class="search-content" tabindex="0">
+      <div class="search-title">
+        <span class="search-icon-input">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-search"></i>
+          </a>
+        </span>
+        
+          <input type="text" class="search-input" id="search-input" placeholder="Search...">
+        
+        <span class="search-close-icon" id="search-close-icon">
+          <a href="javascript: void(0)">
+            <i class="iconfont icon-close"></i>
+          </a>
+        </span>
+      </div>
+      <div class="search-result" id="search-result"></div>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var inputArea = document.querySelector("#search-input")
+    var searchOverlayArea = document.querySelector(".search-overlay")
+
+    inputArea.onclick = function() {
+      getSearchFile()
+      this.onclick = null
+    }
+
+    inputArea.onkeydown = function() {
+      if(event.keyCode == 13)
+        return false
+    }
+
+    function openOrHideSearchContent() {
+      let isHidden = searchOverlayArea.classList.contains('hidden')
+      if (isHidden) {
+        searchOverlayArea.classList.remove('hidden')
+        document.body.classList.add('hidden')
+        // inputArea.focus()
+      } else {
+        searchOverlayArea.classList.add('hidden')
+        document.body.classList.remove('hidden')
+      }
+    }
+
+    function blurSearchContent(e) {
+      if (e.target === searchOverlayArea) {
+        openOrHideSearchContent()
+      }
+    }
+
+    document.querySelector("#search-icon").addEventListener("click", openOrHideSearchContent, false)
+    document.querySelector("#search-close-icon").addEventListener("click", openOrHideSearchContent, false)
+    searchOverlayArea.addEventListener("click", blurSearchContent, false)
+
+    var searchFunc = function (path, search_id, content_id) {
+      'use strict';
+      var $input = document.getElementById(search_id);
+      var $resultContent = document.getElementById(content_id);
+      $resultContent.innerHTML = "<ul><span class='local-search-empty'>First search, index file loading, please wait...<span></ul>";
+      $.ajax({
+        // 0x01. load xml file
+        url: path,
+        dataType: "xml",
+        success: function (xmlResponse) {
+          // 0x02. parse xml file
+          var datas = $("entry", xmlResponse).map(function () {
+            return {
+              title: $("title", this).text(),
+              content: $("content", this).text(),
+              url: $("url", this).text()
+            };
+          }).get();
+          $resultContent.innerHTML = "";
+
+          $input.addEventListener('input', function () {
+            // 0x03. parse query to keywords list
+            var str = '<ul class=\"search-result-list\">';
+            var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+            $resultContent.innerHTML = "";
+            if (this.value.trim().length <= 0) {
+              return;
+            }
+            // 0x04. perform local searching
+            datas.forEach(function (data) {
+              var isMatch = true;
+              var content_index = [];
+              if (!data.title || data.title.trim() === '') {
+                data.title = "Untitled";
+              }
+              var orig_data_title = data.title.trim();
+              var data_title = orig_data_title.toLowerCase();
+              var orig_data_content = data.content.trim().replace(/<[^>]+>/g, "");
+              var data_content = orig_data_content.toLowerCase();
+              var data_url = data.url;
+              var index_title = -1;
+              var index_content = -1;
+              var first_occur = -1;
+              // only match artiles with not empty contents
+              if (data_content !== '') {
+                keywords.forEach(function (keyword, i) {
+                  index_title = data_title.indexOf(keyword);
+                  index_content = data_content.indexOf(keyword);
+
+                  if (index_title < 0 && index_content < 0) {
+                    isMatch = false;
+                  } else {
+                    if (index_content < 0) {
+                      index_content = 0;
+                    }
+                    if (i == 0) {
+                      first_occur = index_content;
+                    }
+                    // content_index.push({index_content:index_content, keyword_len:keyword_len});
+                  }
+                });
+              } else {
+                isMatch = false;
+              }
+              // 0x05. show search results
+              if (isMatch) {
+                str += "<li><a href='" + data_url + "' class='search-result-title'>" + orig_data_title + "</a>";
+                var content = orig_data_content;
+                if (first_occur >= 0) {
+                  // cut out 100 characters
+                  var start = first_occur - 20;
+                  var end = first_occur + 80;
+
+                  if (start < 0) {
+                    start = 0;
+                  }
+
+                  if (start == 0) {
+                    end = 100;
+                  }
+
+                  if (end > content.length) {
+                    end = content.length;
+                  }
+
+                  var match_content = content.substr(start, end);
+
+                  // highlight all keywords
+                  keywords.forEach(function (keyword) {
+                    var regS = new RegExp(keyword, "gi");
+                    match_content = match_content.replace(regS, "<span class=\"search-keyword\">" + keyword + "</span>");
+                  });
+
+                  str += "<p class=\"search-result-abstract\">" + match_content + "...</p>"
+                }
+                str += "</li>";
+              }
+            });
+            str += "</ul>";
+            if (str.indexOf('<li>') === -1) {
+              return $resultContent.innerHTML = "<ul><span class='local-search-empty'>No result<span></ul>";
+            }
+            $resultContent.innerHTML = str;
+          });
+        },
+        error: function(xhr, status, error) {
+          $resultContent.innerHTML = ""
+          if (xhr.status === 404) {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The search.xml file was not found, please refer to：<a href='https://github.com/zchengsite/hexo-theme-oranges#configuration' target='_black'>configuration</a><span></ul>";
+          } else {
+            $resultContent.innerHTML = "<ul><span class='local-search-empty'>The request failed, Try to refresh the page or try again later.<span></ul>";
+          }
+        }
+      });
+      $(document).on('click', '#search-close-icon', function() {
+        $('#search-input').val('');
+        $('#search-result').html('');
+      });
+    }
+
+    var getSearchFile = function() {
+        var path = "/search.xml";
+        searchFunc(path, 'search-input', 'search-result');
+    }
+  </script>
+
+
+
+
+        
+  <div class="tools-bar-item theme-icon" id="switch-color-scheme">
+    <a href="javascript: void(0)">
+      <i id="theme-icon" class="iconfont icon-moon"></i>
+    </a>
+  </div>
+
+  
+<script src="/js/colorscheme.js"></script>
+
+
+
+
+
+        
+  
+    <div class="share-icon tools-bar-item">
+      <a href="javascript: void(0)" id="share-icon">
+        <i class="iconfont iconshare"></i>
+      </a>
+      <div class="share-content hidden">
+        
+          <a class="share-item" href="https://twitter.com/intent/tweet?text=' + %E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F-0x03%20%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86 + '&url=' + http%3A%2F%2Fysec.site%2F2024%2F12%2F04%2F0x03%2520%25E4%25BF%25A1%25E6%2581%25AF%25E6%2594%25B6%25E9%259B%2586%2F + '" target="_blank" title="Twitter">
+            <i class="iconfont icon-twitter"></i>
+          </a>
+        
+        
+          <a class="share-item" href="https://www.facebook.com/sharer.php?u=http://ysec.site/2024/12/04/0x03%20%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/" target="_blank" title="Facebook">
+            <i class="iconfont icon-facebooksquare"></i>
+          </a>
+        
+      </div>
+    </div>
+  
+  
+<script src="/js/shares.js"></script>
+
+
+
+      </div>
+    </div>
+  </body>
+</html>
